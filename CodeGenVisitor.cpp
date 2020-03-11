@@ -75,6 +75,11 @@ antlrcpp::Any CodeGenVisitor::visitFunction(AslParser::FunctionContext *ctx) {
   DEBUG_ENTER();
   SymTable::ScopeId sc = getScopeDecor(ctx);
   Symbols.pushThisScope(sc);
+  ////////////////////
+  ctx->function_params();
+
+  ///////////////////////////////////////////////////
+  
   subroutine subr(ctx->ID()->getText());
   codeCounters.reset();
   std::vector<var> && lvars = visit(ctx->declarations());
@@ -110,13 +115,16 @@ antlrcpp::Any CodeGenVisitor::visitVariable_decl(AslParser::Variable_declContext
 
 antlrcpp::Any CodeGenVisitor::visitFunction_params(AslParser::Function_paramsContext *ctx) {
   DEBUG_ENTER();
-  std::vector<var> lvars;
-  for (auto & varDeclCtx : ctx->function_params()) {
-    var onevar = visit(varDeclCtx);
-    lvars.push_back(onevar);
+  std::vector< std::pair<std::string, std::size_t> > vec (ctx->ID().size());
+  
+  for(uint i = 0; i < ctx->ID().size();++i){
+      std::string texto = ctx->ID()[i]->getText();
+      std::size_t   size = Types.getSizeOfType(ctx->type()[i]);
+      vec[i] = {texto,size};
   }
   DEBUG_EXIT();
-  return lvars;
+  //std::size_t      size = Types.getSizeOfType(t1);
+  return vec;
 }
 
 antlrcpp::Any CodeGenVisitor::visitStatements(AslParser::StatementsContext *ctx) {

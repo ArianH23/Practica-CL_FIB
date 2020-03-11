@@ -41,7 +41,7 @@ function
         : FUNC ID '('function_params ')'(':' type)? declarations statements ENDFUNC
         ;
 function_params
-        :( | ID':'type(',' ID ':' type)* )
+        :( | ID':'type (',' ID ':' type)* )
         ;
 
 declarations
