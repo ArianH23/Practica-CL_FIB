@@ -157,23 +157,6 @@ antlrcpp::Any SymbolsVisitor::visitFunction_params(AslParser::Function_paramsCon
 
 antlrcpp::Any SymbolsVisitor::visitType(AslParser::TypeContext *ctx) {
   DEBUG_ENTER();
-  
-  // if (ctx->INT()) {
-  //   TypesMgr::TypeId t = Types.createIntegerTy();
-  //   putTypeDecor(ctx, t);
-  // }
-  // else if (ctx->BOOL()) {
-  //   TypesMgr::TypeId t = Types.createBooleanTy();
-  //   putTypeDecor(ctx, t);
-  // }
-  // else if (ctx->FLOAT()) {
-  //   TypesMgr::TypeId t = Types.createFloatTy();
-  //   putTypeDecor(ctx, t);
-  // }
-  // else if (ctx->CHAR()) {
-  //   TypesMgr::TypeId t = Types.createCharacterTy();
-  //   putTypeDecor(ctx, t);
-  // }
 
   if(ctx->simple_type()){
     visit(ctx -> simple_type());
@@ -185,6 +168,7 @@ antlrcpp::Any SymbolsVisitor::visitType(AslParser::TypeContext *ctx) {
   DEBUG_EXIT();
   return 0;
 }
+
 antlrcpp::Any SymbolsVisitor::visitSimple_type(AslParser::Simple_typeContext *ctx) {
   DEBUG_ENTER();
   
@@ -209,7 +193,7 @@ antlrcpp::Any SymbolsVisitor::visitSimple_type(AslParser::Simple_typeContext *ct
 }
 antlrcpp::Any SymbolsVisitor::visitArray_type(AslParser::Array_typeContext *ctx) {
   DEBUG_ENTER();
-  int s = std::stoi(ctx->INT()->getText());
+  int s = std::stoi(ctx->INTVAL()->getText());
 
   TypesMgr::TypeId tipo = getTypeDecor(ctx->simple_type());
 

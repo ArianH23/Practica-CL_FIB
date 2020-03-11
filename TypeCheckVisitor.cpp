@@ -117,9 +117,25 @@ antlrcpp::Any TypeCheckVisitor::visitStatements(AslParser::StatementsContext *ct
 antlrcpp::Any TypeCheckVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx) {
   DEBUG_ENTER();
   visit(ctx->left_expr());
+  
   visit(ctx->expr());
+  
   TypesMgr::TypeId t1 = getTypeDecor(ctx->left_expr());
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr());
+  
+  //Comprobacion de arrays
+  if(ctx -> left_expr() -> LC()){
+    if(not Types.isArrayTy(t1)) {
+      Errors.nonArrayInArrayAccess(ctx->left_expr());
+    }
+    if(ctx->left_expr()->expr()){
+      if (not Types.isIntegerTy(getTypeDecor(ctx->left_expr()->expr()))){
+        Errors.nonIntegerIndexInArrayAccess(ctx->left_expr()->expr());
+      }
+    }
+  }
+  ////
+
   if ((not Types.isErrorTy(t1)) and (not Types.isErrorTy(t2)) and
       (not Types.copyableTypes(t1, t2)))
     Errors.incompatibleAssignment(ctx->ASSIGN());
@@ -129,6 +145,28 @@ antlrcpp::Any TypeCheckVisitor::visitAssignStmt(AslParser::AssignStmtContext *ct
   return 0;
 }
 
+antlrcpp::Any TypeCheckVisitor::visitArrayPos(AslParser::ArrayPosContext *ctx) {
+  DEBUG_ENTER();
+
+  visit(ctx->ID());
+  TypesMgr::TypeId t1 = getTypeDecor(ctx);
+  
+  if(not Types.isArrayTy(t1)) {
+    Errors.nonArrayInArrayAccess(ctx);
+  }
+  
+  else if (not Types.isIntegerTy(getTypeDecor(ctx->expr()))){
+    Errors.nonIntegerIndexInArrayAccess(ctx->expr());
+  }
+
+  putTypeDecor(ctx, t1);
+  bool b = getIsLValueDecor(ctx);
+  putIsLValueDecor(ctx, b);
+
+  DEBUG_EXIT();
+
+  return 0;
+}
 antlrcpp::Any TypeCheckVisitor::visitIfStmt(AslParser::IfStmtContext *ctx) {
   DEBUG_ENTER();
   visit(ctx->expr());
@@ -194,7 +232,7 @@ antlrcpp::Any TypeCheckVisitor::visitWriteExpr(AslParser::WriteExprContext *ctx)
 
 antlrcpp::Any TypeCheckVisitor::visitLeft_expr(AslParser::Left_exprContext *ctx) {
   DEBUG_ENTER();
-  visit(ctx->ident());
+  visit(ctx->ident());    //Comprueba la existencia de identificador en la pila?
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
   putTypeDecor(ctx, t1);
   bool b = getIsLValueDecor(ctx->ident());

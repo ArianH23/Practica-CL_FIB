@@ -53,7 +53,7 @@ variable_decl
         ;
 
 array_type     
-        : ARRAY LC INT RC 'of' simple_type;
+        : ARRAY LC INTVAL RC 'of' simple_type;
 
 
 simple_type    
@@ -91,7 +91,7 @@ statement
         ;
 // Grammar for left expressions (l-values in C++)
 left_expr
-        : ident
+        : ident (LC expr RC)?
         ;
 
 // Grammar for expressions with boolean, relational and aritmetic operators
@@ -105,6 +105,7 @@ expr    : LP expr RP                                # parenthesis
         | expr op=(EQUAL|LT|LTE|GT|GTE|NE) expr     # relational
         | expr op=(AND|OR) expr                     # logical
         | op=NOT expr                               # not
+        | ID LC expr RC                             # arrayPos
         ;
 
 ident   : ID

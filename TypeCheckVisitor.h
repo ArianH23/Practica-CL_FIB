@@ -84,6 +84,7 @@ public:
   antlrcpp::Any visitNot(AslParser::NotContext *ctx);
   antlrcpp::Any visitNegvalue(AslParser::NegvalueContext *ctx);
   antlrcpp::Any visitNegExprIdent(AslParser::NegExprIdentContext *ctx);
+  antlrcpp::Any visitArrayPos(AslParser::ArrayPosContext *ctx);
 
   
 private:
