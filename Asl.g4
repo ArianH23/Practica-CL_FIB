@@ -38,7 +38,10 @@ program : function+ EOF
 
 // A function has a name, a list of parameters and a list of statements
 function
-        : FUNC ID '(' ')' declarations statements ENDFUNC
+        : FUNC ID '('function_params ')'(':' type)? declarations statements ENDFUNC
+        ;
+function_params
+        :( | ID':'type(',' ID ':' type)* )
         ;
 
 declarations
@@ -75,6 +78,8 @@ statement
         | WRITE expr ';'                      # writeExpr
           // Write a string
         | WRITE STRING ';'                    # writeString
+        
+        | RETURN (expr)?  ';'                 # returnStmt
         ;
 // Grammar for left expressions (l-values in C++)
 left_expr
@@ -89,7 +94,7 @@ expr    : LP expr RP                                # parenthesis
         | (SUB) ident                               # negExprIdent
         | expr op=(MUL|DIV) expr                    # arithmetic
         | expr op=(PLUS|SUB) expr                   # arithmetic
-        | expr op=(EQUAL|LT|LTE|GT|GTE) expr        # relational
+        | expr op=(EQUAL|LT|LTE|GT|GTE|NE) expr     # relational
         | expr op=(AND|OR) expr                     # logical
         | op=NOT expr                               # not
         ;
@@ -126,6 +131,10 @@ BOOLVAL   : ('true' | 'false');
 IF        : 'if' ;
 THEN      : 'then' ;
 ELSE      : 'else' ;
+WHILE     : 'while';
+ENDWHILE  : 'endwhile';
+DO        : 'do';
+RETURN    : 'return';
 ENDIF     : 'endif' ;
 FUNC      : 'func' ;
 ENDFUNC   : 'endfunc' ;
@@ -136,9 +145,7 @@ INTVAL    : ('0'..'9')+ ;
 FLOATVAL  : ('0'..'9')+ '.' ('0'..'9')+ ;
 CHARVAL   : '\'' (ESC_SEQ| ~('\\'|'\'') ) '\'';
 COMMA     : ',';
-WHILE     : 'while';
-ENDWHILE  : 'endwhile';
-DO        : 'do';
+
 
 // Strings (in quotes) with escape sequences
 STRING    : '"' ( ESC_SEQ | ~('\\'|'"') )* '"' ;

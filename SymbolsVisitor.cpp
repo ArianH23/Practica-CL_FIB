@@ -118,11 +118,33 @@ antlrcpp::Any SymbolsVisitor::visitVariable_decl(AslParser::Variable_declContext
       
     std::string ident = ctx->ID()[i]->getText();
     if (Symbols.findInCurrentScope(ident)) {
-    Errors.declaredIdent(ctx->ID()[i]);
+    Errors.declaredIdent(ctx->ID()[i]);//Funcionamiento de pila
     }
   
   else {
     TypesMgr::TypeId t1 = getTypeDecor(ctx->type());
+    Symbols.addLocalVar(ident, t1);
+    }
+      
+  }
+  
+  DEBUG_EXIT();
+  return 0;
+}
+
+antlrcpp::Any SymbolsVisitor::visitFunction_params(AslParser::Function_paramsContext *ctx) {
+  DEBUG_ENTER();
+  //visit(ctx->type());
+  
+  for(uint i = 0; i<ctx->ID().size(); ++i){
+      
+    std::string ident = ctx->ID()[i]->getText();
+    if (Symbols.findInCurrentScope(ident)) {
+    Errors.declaredIdent(ctx->ID()[i]);//Funcionamiento de pila
+    }
+  
+  else {
+    TypesMgr::TypeId t1 = getTypeDecor(ctx->type()[i]);
     Symbols.addLocalVar(ident, t1);
     }
       

@@ -108,6 +108,17 @@ antlrcpp::Any CodeGenVisitor::visitVariable_decl(AslParser::Variable_declContext
   return var{ctx->ID()[0]->getText(), size};
 }
 
+antlrcpp::Any CodeGenVisitor::visitFunction_params(AslParser::Function_paramsContext *ctx) {
+  DEBUG_ENTER();
+  std::vector<var> lvars;
+  for (auto & varDeclCtx : ctx->function_params()) {
+    var onevar = visit(varDeclCtx);
+    lvars.push_back(onevar);
+  }
+  DEBUG_EXIT();
+  return lvars;
+}
+
 antlrcpp::Any CodeGenVisitor::visitStatements(AslParser::StatementsContext *ctx) {
   DEBUG_ENTER();
   instructionList code;
@@ -155,14 +166,14 @@ antlrcpp::Any CodeGenVisitor::visitIfStmt(AslParser::IfStmtContext *ctx) {
 antlrcpp::Any CodeGenVisitor::visitWhileStmt(AslParser::WhileStmtContext *ctx) {
   DEBUG_ENTER();
   instructionList code;
-//   CodeAttribs     && codAtsE = visit(ctx->expr());
-//   std::string          addr1 = codAtsE.addr;
-//   instructionList &    code1 = codAtsE.code;
-//   instructionList &&   code2 = visit(ctx->statements());
-//   std::string label = codeCounters.newLabelWHILE();
-//   std::string labelEndIf = "endwhile"+label;
-//   code = code1 || instruction::FJUMP(addr1, labelEndIf) ||
-//          code2 || instruction::LABEL(labelEndIf);
+  CodeAttribs     && codAtsE = visit(ctx->expr());
+  std::string          addr1 = codAtsE.addr;
+  instructionList &    code1 = codAtsE.code;
+  instructionList &&   code2 = visit(ctx->statements());
+  std::string label = codeCounters.newLabelWHILE();
+  std::string labelEndIf = "endwhile"+label;
+  code = code1 || instruction::FJUMP(addr1, labelEndIf) ||
+         code2 || instruction::LABEL(labelEndIf);
   DEBUG_EXIT();
   return code;
 }
