@@ -272,7 +272,7 @@ antlrcpp::Any TypeCheckVisitor::visitValue(AslParser::ValueContext *ctx) {
   TypesMgr::TypeId t;
   
   if(ctx->INTVAL()){
-      t = Types.createIntegerTy();
+    t = Types.createIntegerTy();
   }
   else if(ctx->FLOATVAL()){
     t = Types.createFloatTy();

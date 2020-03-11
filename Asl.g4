@@ -41,7 +41,7 @@ function
         : FUNC ID '(' function_params ')'(':' type)? declarations statements ENDFUNC
         ;
 function_params
-        :( | ID':'type (COMMA ID ':' type)* )
+        :( | ID ':' type (COMMA ID ':' type)* )
         ;
 
 declarations
@@ -52,10 +52,18 @@ variable_decl
         : VAR ID (COMMA ID)* ':' type
         ;
 
-type    : INT 
+array_type     
+        : ARRAY LC INT RC 'of' simple_type;
+
+
+simple_type    
+        : INT 
          |BOOL
          |CHAR
          |FLOAT
+        ;
+
+type    : (array_type|simple_type)
         ;
 
 statements
@@ -120,12 +128,15 @@ PLUS      : '+' ;
 SUB       : '-' ;
 LP        : '(' ;
 RP        : ')' ;
+LC        : '[' ;
+RC        : ']' ;
 BOOL      : 'bool';
 FLOAT     : 'float';
 CHAR      : 'char';
 MUL       : '*';
 DIV       : '/';
 VAR       : 'var';
+ARRAY     : 'array';
 INT       : 'int';
 BOOLVAL   : ('true' | 'false');
 IF        : 'if' ;
