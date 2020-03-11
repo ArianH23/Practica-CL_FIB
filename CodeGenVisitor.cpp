@@ -75,12 +75,18 @@ antlrcpp::Any CodeGenVisitor::visitFunction(AslParser::FunctionContext *ctx) {
   DEBUG_ENTER();
   SymTable::ScopeId sc = getScopeDecor(ctx);
   Symbols.pushThisScope(sc);
-  ////////////////////
-  ctx->function_params();
 
+    std::cout<<"xd"<<std::endl;
+  subroutine subr(ctx->ID()->getText());
+
+  ////////////////////
+  std::vector<var> && fvars = visit(ctx->function_params());
+  for (auto & onevar : fvars) {
+    subr.add_var(onevar);
+
+  }
   ///////////////////////////////////////////////////
   
-  subroutine subr(ctx->ID()->getText());
   codeCounters.reset();
   std::vector<var> && lvars = visit(ctx->declarations());
   for (auto & onevar : lvars) {
@@ -115,16 +121,17 @@ antlrcpp::Any CodeGenVisitor::visitVariable_decl(AslParser::Variable_declContext
 
 antlrcpp::Any CodeGenVisitor::visitFunction_params(AslParser::Function_paramsContext *ctx) {
   DEBUG_ENTER();
-  std::vector< std::pair<std::string, std::size_t> > vec (ctx->ID().size());
-  
+  std::vector<var> lvars;
+  std::cout<<"xd"<<std::endl;
+
   for(uint i = 0; i < ctx->ID().size();++i){
       std::string texto = ctx->ID()[i]->getText();
-      std::size_t   size = Types.getSizeOfType(ctx->type()[i]);
-      vec[i] = {texto,size};
+      // std::size_t   size = Types.getSizeOfType(ctx->type()[i]);
+      lvars.push_back({texto,4});
   }
   DEBUG_EXIT();
-  //std::size_t      size = Types.getSizeOfType(t1);
-  return vec;
+  
+   return lvars;
 }
 
 antlrcpp::Any CodeGenVisitor::visitStatements(AslParser::StatementsContext *ctx) {
