@@ -122,19 +122,6 @@ antlrcpp::Any TypeCheckVisitor::visitAssignStmt(AslParser::AssignStmtContext *ct
   
   TypesMgr::TypeId t1 = getTypeDecor(ctx->left_expr());
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr());
-  
-  //Comprobacion de arrays
-  if(ctx -> left_expr() -> LC()){
-    if(not Types.isArrayTy(t1)) {
-      Errors.nonArrayInArrayAccess(ctx->left_expr());
-    }
-    if(ctx->left_expr()->expr()){
-      if (not Types.isIntegerTy(getTypeDecor(ctx->left_expr()->expr()))){
-        Errors.nonIntegerIndexInArrayAccess(ctx->left_expr()->expr());
-      }
-    }
-  }
-  ////
 
   if ((not Types.isErrorTy(t1)) and (not Types.isErrorTy(t2)) and
       (not Types.copyableTypes(t1, t2)))
@@ -147,19 +134,23 @@ antlrcpp::Any TypeCheckVisitor::visitAssignStmt(AslParser::AssignStmtContext *ct
 
 antlrcpp::Any TypeCheckVisitor::visitArrayPos(AslParser::ArrayPosContext *ctx) {
   DEBUG_ENTER();
-
-  visit(ctx->ID());
-  TypesMgr::TypeId t1 = getTypeDecor(ctx);
+  visit(ctx->ident());
+  visit(ctx->expr());
   
-  if(not Types.isArrayTy(t1)) {
-    Errors.nonArrayInArrayAccess(ctx);
+  TypesMgr::TypeId id = getTypeDecor(ctx->ident());
+  TypesMgr::TypeId expr = getTypeDecor(ctx->expr());
+
+  //std::cout<<id.getTypeKind()<<std::endl;
+
+  if(not Types.isArrayTy(id)) {
+    Errors.nonArrayInArrayAccess(ctx->ident());
   }
   
-  else if (not Types.isIntegerTy(getTypeDecor(ctx->expr()))){
+  if (not Types.isIntegerTy(expr)){
     Errors.nonIntegerIndexInArrayAccess(ctx->expr());
   }
 
-  putTypeDecor(ctx, t1);
+  putTypeDecor(ctx, id);
   bool b = getIsLValueDecor(ctx);
   putIsLValueDecor(ctx, b);
 
@@ -233,6 +224,22 @@ antlrcpp::Any TypeCheckVisitor::visitWriteExpr(AslParser::WriteExprContext *ctx)
 antlrcpp::Any TypeCheckVisitor::visitLeft_expr(AslParser::Left_exprContext *ctx) {
   DEBUG_ENTER();
   visit(ctx->ident());    //Comprueba la existencia de identificador en la pila?
+  /////////////////////////
+  if(ctx->LC()){
+    visit(ctx->expr());
+    TypesMgr::TypeId id = getTypeDecor(ctx->ident());
+    TypesMgr::TypeId ex = getTypeDecor(ctx->expr());
+
+    
+    if(not Types.isArrayTy(id)) {
+      Errors.nonArrayInArrayAccess(ctx->ident());
+    }
+
+    if(not Types.isIntegerTy(ex)) {
+      Errors.nonIntegerIndexInArrayAccess(ctx->expr());
+    }
+  }
+  //////////////////////////////
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
   putTypeDecor(ctx, t1);
   bool b = getIsLValueDecor(ctx->ident());

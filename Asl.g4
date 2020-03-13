@@ -105,7 +105,7 @@ expr    : LP expr RP                                # parenthesis
         | expr op=(EQUAL|LT|LTE|GT|GTE|NE) expr     # relational
         | expr op=(AND|OR) expr                     # logical
         | op=NOT expr                               # not
-        | ID LC expr RC                             # arrayPos
+        | ident LC expr RC                          # arrayPos
         ;
 
 ident   : ID
