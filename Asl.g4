@@ -44,6 +44,10 @@ function_params
         :( | ID ':' type (COMMA ID ':' type)* )
         ;
 
+function_call
+        : ident LP (expr (',' expr)*)? RP
+        ;
+
 declarations
         : (variable_decl)*
         ;
@@ -96,16 +100,17 @@ left_expr
 
 // Grammar for expressions with boolean, relational and aritmetic operators
 expr    : LP expr RP                                # parenthesis
+        | ident LC expr RC                          # arrayPos
         | (INTVAL|FLOATVAL|CHARVAL|BOOLVAL)         # value
         | (SUB) (INTVAL|FLOATVAL|CHARVAL|BOOLVAL)   # negvalue
         | ident                                     # exprIdent
+        | ident LP (expr (',' expr)*)? RP           # funcValue
         | (SUB) ident                               # negExprIdent
         | expr op=(MUL|DIV) expr                    # arithmetic
         | expr op=(PLUS|SUB) expr                   # arithmetic
         | expr op=(EQUAL|LT|LTE|GT|GTE|NE) expr     # relational
         | expr op=(AND|OR) expr                     # logical
         | op=NOT expr                               # not
-        | ident LC expr RC                          # arrayPos
         ;
 
 ident   : ID

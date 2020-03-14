@@ -94,7 +94,16 @@ antlrcpp::Any SymbolsVisitor::visitFunction(AslParser::FunctionContext *ctx) {
   else {
     std::vector<TypesMgr::TypeId> lParamsTy;
     TypesMgr::TypeId tRet = Types.createVoidTy();
+    if(ctx->type()){
+
+      visit(ctx->type());
+      TypesMgr::TypeId t1 = getTypeDecor(ctx->type());
+      tRet = t1;
+      //std::cout<<"xd"<<std::endl;
+    }
     TypesMgr::TypeId tFunc = Types.createFunctionTy(lParamsTy, tRet);
+    // std::cout<<"Tipo de la funcion " <<tFunc<< " " <<ctx->type()->getText()<<std::endl;
+
     Symbols.addFunction(ident, tFunc);
   }
   
@@ -113,17 +122,17 @@ antlrcpp::Any SymbolsVisitor::visitVariable_decl(AslParser::Variable_declContext
   DEBUG_ENTER();
   visit(ctx->type());
   
-  
+  std::cout<<"Tamaño vec " << ctx->ID().size()<< std::endl;
   for(uint i = 0; i < ctx->ID().size(); ++i){
-      
+    visit(ctx->ID()[i]);
     std::string ident = ctx->ID()[i]->getText();
     if (Symbols.findInCurrentScope(ident)) {
-    Errors.declaredIdent(ctx->ID()[i]);//Funcionamiento de pila
+      Errors.declaredIdent(ctx->ID()[i]);//Funcionamiento de pila
     }
   
-  else {
-    TypesMgr::TypeId t1 = getTypeDecor(ctx->type());
-    Symbols.addLocalVar(ident, t1);
+    else {
+      TypesMgr::TypeId t1 = getTypeDecor(ctx->type());
+      Symbols.addLocalVar(ident, t1);
     }
       
   }
@@ -171,24 +180,27 @@ antlrcpp::Any SymbolsVisitor::visitType(AslParser::TypeContext *ctx) {
 
 antlrcpp::Any SymbolsVisitor::visitSimple_type(AslParser::Simple_typeContext *ctx) {
   DEBUG_ENTER();
+  std::cout<<"Eligiendo tipo " <<std::endl;
+  std::cout<<ctx->getText()<<std::endl;
   
-  if (ctx -> INT()) {
-    TypesMgr::TypeId t = Types.createIntegerTy();
-    putTypeDecor(ctx, t);
+  TypesMgr::TypeId t = Types.createErrorTy();
+
+  if(ctx->INT()){
+    t = Types.createIntegerTy();
   }
-  else if (ctx -> BOOL()) {
-    TypesMgr::TypeId t = Types.createBooleanTy();
-    putTypeDecor(ctx, t);
+  if(ctx->FLOAT()){
+    t = Types.createFloatTy();
   }
-  else if (ctx -> FLOAT()) {
-    TypesMgr::TypeId t = Types.createFloatTy();
-    putTypeDecor(ctx, t);
+  if(ctx->BOOL()){
+    t = Types.createBooleanTy();
   }
-  else if (ctx -> CHAR()) {
-    TypesMgr::TypeId t = Types.createCharacterTy();
-    putTypeDecor(ctx, t);
+  if(ctx->CHAR()){
+    t = Types.createCharacterTy();
   }
+    std::cout<<"Tipo de t en SV" <<t<<std::endl;
+
   DEBUG_EXIT();
+
   return 0;
 }
 antlrcpp::Any SymbolsVisitor::visitArray_type(AslParser::Array_typeContext *ctx) {
