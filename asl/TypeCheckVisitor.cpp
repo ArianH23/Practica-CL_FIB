@@ -67,6 +67,8 @@ antlrcpp::Any TypeCheckVisitor::visitProgram(AslParser::ProgramContext *ctx) {
   for (auto ctxFunc : ctx->function()) { 
     visit(ctxFunc);
   }
+  
+  //Symbols.print();
   if (Symbols.noMainProperlyDeclared())
     Errors.noMainProperlyDeclared(ctx);
   Symbols.popScope();
@@ -122,7 +124,7 @@ antlrcpp::Any TypeCheckVisitor::visitAssignStmt(AslParser::AssignStmtContext *ct
   
   TypesMgr::TypeId t1 = getTypeDecor(ctx->left_expr());
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr());
-
+  //std::cout<<t1<<"  " <<t2<<std::endl;
   if ((not Types.isErrorTy(t1)) and (not Types.isErrorTy(t2)) and
       (not Types.copyableTypes(t1, t2)))
     Errors.incompatibleAssignment(ctx->ASSIGN());
@@ -381,14 +383,21 @@ antlrcpp::Any TypeCheckVisitor::visitFuncValue(AslParser::FuncValueContext *ctx)
   DEBUG_ENTER();
   visit(ctx->ident());
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
+  TypesMgr::TypeId t= Types.createErrorTy();
   
   if (not Types.isFunctionTy(t1)) {
     Errors.isNotCallable(ctx->ident());
   }
+  else{
+    t = Types.getFuncReturnType(t1);
+    // std::cout<<t<<std::endl;
+    putTypeDecor(ctx, t);
   
-  putTypeDecor(ctx, t1);
+    putIsLValueDecor(ctx, false);
+    //std::cout<<t<<std::endl;
+    //std::cout<<"act "<<getTypeDecor(ctx)<<std::endl;
 
-  putIsLValueDecor(ctx, false);
+  }
   DEBUG_EXIT();
   return 0;
 }

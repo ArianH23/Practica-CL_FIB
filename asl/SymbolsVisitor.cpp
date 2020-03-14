@@ -83,6 +83,7 @@ antlrcpp::Any SymbolsVisitor::visitFunction(AslParser::FunctionContext *ctx) {
   putScopeDecor(ctx, sc);
 
   visit(ctx->function_params());
+  //std::cout<< funcName << " es lo que soy " <<std::endl;
   visit(ctx->declarations());
   // Symbols.print();
   Symbols.popScope();
@@ -100,11 +101,15 @@ antlrcpp::Any SymbolsVisitor::visitFunction(AslParser::FunctionContext *ctx) {
       visit(ctx->type());
       TypesMgr::TypeId t1 = getTypeDecor(ctx->type());
       tRet = t1;
+      
     }
-    
+    for (auto i : ctx->function_params()->type()){
+        lParamsTy.push_back(getTypeDecor(i));
+    }
     TypesMgr::TypeId tFunc = Types.createFunctionTy(lParamsTy, tRet);
-
     Symbols.addFunction(ident, tFunc);
+    
+
   }
   
   DEBUG_EXIT();
@@ -123,10 +128,10 @@ antlrcpp::Any SymbolsVisitor::visitVariable_decl(AslParser::Variable_declContext
   visit(ctx->type());
   
   for(uint i = 0; i < ctx->ID().size(); ++i){
-    visit(ctx->ID()[i]);
-    std::string ident = ctx->ID()[i]->getText();
+    visit(ctx->ID(i));
+    std::string ident = ctx->ID(i)->getText();
     if (Symbols.findInCurrentScope(ident)) {
-      Errors.declaredIdent(ctx->ID()[i]);//Funcionamiento de pila
+      Errors.declaredIdent(ctx->ID(i));//Funcionamiento de pila
     }
   
     else {
@@ -143,20 +148,22 @@ antlrcpp::Any SymbolsVisitor::visitFunction_params(AslParser::Function_paramsCon
   DEBUG_ENTER();
   //visit(ctx->type()[i]);
   
-  for(uint i = 0; i<ctx->ID().size(); ++i){
+  for(uint i = 0; i < ctx->ID().size(); ++i){
     visit(ctx->type(i));
 
     std::string ident = ctx->ID(i)->getText();
-    if (Symbols.findInCurrentScope(ident)) {
-      Errors.declaredIdent(ctx->ID(i));//Funcionamiento de pila
-    }
+    // if (Symbols.findInCurrentScope(ident)) {
+    //   Errors.declaredIdent(ctx->ID(i));
+    // }
   
-    else {
-      TypesMgr::TypeId t1 = getTypeDecor(ctx->type(i));
-      Symbols.addLocalVar(ident, t1);
-    }
+    //else {
+    TypesMgr::TypeId t1 = getTypeDecor(ctx->type(i));
+    Symbols.addParameter(ident, t1);
+    //}
+
   }
-  
+  //std::cout<<std::endl;
+  // Symbols.print();
   DEBUG_EXIT();
   return 0;
 }
