@@ -40,6 +40,7 @@ program : function+ EOF
 function
         : FUNC ID '(' function_params ')'(':' type)? declarations statements ENDFUNC
         ;
+        
 function_params
         :( | ID ':' type (COMMA ID ':' type)* )
         ;

@@ -1,4 +1,4 @@
-// Generated from /home/arian/Uni/CL/practica/asl/Asl.g4 by ANTLR 4.7.1
+// Generated from /home/arian/Uni/CL/Practica-CL/asl/Asl.g4 by ANTLR 4.7.1
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;

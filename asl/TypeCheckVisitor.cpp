@@ -116,20 +116,12 @@ antlrcpp::Any TypeCheckVisitor::visitStatements(AslParser::StatementsContext *ct
 
 antlrcpp::Any TypeCheckVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx) {
   DEBUG_ENTER();
-  Symbols.print();
   visit(ctx->left_expr());
   
   visit(ctx->expr());
   
   TypesMgr::TypeId t1 = getTypeDecor(ctx->left_expr());
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr());
-  //std::cout<<Types.isErrorTy(t1)<<std::endl;
-
-  std::cout<<ctx->left_expr()->getText()<<std::endl;
-  std::cout<<ctx->expr()->getText()<<std::endl;
-  
-  std::cout<<Types.isErrorTy(t1)<<std::endl;
-  std::cout<<Types.isErrorTy(t2)<<std::endl;
 
   if ((not Types.isErrorTy(t1)) and (not Types.isErrorTy(t2)) and
       (not Types.copyableTypes(t1, t2)))
@@ -349,7 +341,7 @@ antlrcpp::Any TypeCheckVisitor::visitValue(AslParser::ValueContext *ctx) {
     t = Types.createCharacterTy();
   }
   else t = Types.createErrorTy();
-  std::cout<<"Tipo de t en TCV" <<t<<std::endl;
+
   putTypeDecor(ctx, t);
   putIsLValueDecor(ctx, false);
   DEBUG_EXIT();

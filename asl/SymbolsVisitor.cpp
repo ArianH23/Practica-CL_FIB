@@ -81,6 +81,7 @@ antlrcpp::Any SymbolsVisitor::visitFunction(AslParser::FunctionContext *ctx) {
   std::string funcName = ctx->ID()->getText();
   SymTable::ScopeId sc = Symbols.pushNewScope(funcName);
   putScopeDecor(ctx, sc);
+
   visit(ctx->function_params());
   visit(ctx->declarations());
   // Symbols.print();
@@ -99,10 +100,9 @@ antlrcpp::Any SymbolsVisitor::visitFunction(AslParser::FunctionContext *ctx) {
       visit(ctx->type());
       TypesMgr::TypeId t1 = getTypeDecor(ctx->type());
       tRet = t1;
-      //std::cout<<"xd"<<std::endl;
     }
+    
     TypesMgr::TypeId tFunc = Types.createFunctionTy(lParamsTy, tRet);
-    // std::cout<<"Tipo de la funcion " <<tFunc<< " " <<ctx->type()->getText()<<std::endl;
 
     Symbols.addFunction(ident, tFunc);
   }
@@ -122,7 +122,6 @@ antlrcpp::Any SymbolsVisitor::visitVariable_decl(AslParser::Variable_declContext
   DEBUG_ENTER();
   visit(ctx->type());
   
-  std::cout<<"Tamaño vec " << ctx->ID().size()<< std::endl;
   for(uint i = 0; i < ctx->ID().size(); ++i){
     visit(ctx->ID()[i]);
     std::string ident = ctx->ID()[i]->getText();
@@ -145,17 +144,15 @@ antlrcpp::Any SymbolsVisitor::visitFunction_params(AslParser::Function_paramsCon
   //visit(ctx->type()[i]);
   
   for(uint i = 0; i<ctx->ID().size(); ++i){
-    visit(ctx->type()[i]);
-    // std::cout<<typeid(ctx->type()).name()<<std::endl;
+    visit(ctx->type(i));
 
-    std::string ident = ctx->ID()[i]->getText();
+    std::string ident = ctx->ID(i)->getText();
     if (Symbols.findInCurrentScope(ident)) {
-      Errors.declaredIdent(ctx->ID()[i]);//Funcionamiento de pila
+      Errors.declaredIdent(ctx->ID(i));//Funcionamiento de pila
     }
   
     else {
-      TypesMgr::TypeId t1 = getTypeDecor(ctx->type()[i]);
-      //std::cout<<ctx->ID()[i]->getText()<<std::endl;
+      TypesMgr::TypeId t1 = getTypeDecor(ctx->type(i));
       Symbols.addLocalVar(ident, t1);
     }
   }
@@ -166,12 +163,19 @@ antlrcpp::Any SymbolsVisitor::visitFunction_params(AslParser::Function_paramsCon
 
 antlrcpp::Any SymbolsVisitor::visitType(AslParser::TypeContext *ctx) {
   DEBUG_ENTER();
+  
+  TypesMgr::TypeId t;
 
   if(ctx->simple_type()){
     visit(ctx -> simple_type());
+    t = getTypeDecor(ctx->simple_type());
+    putTypeDecor(ctx,t);
+
   }
   else{
     visit (ctx -> array_type());
+    t = getTypeDecor(ctx->array_type());
+    putTypeDecor(ctx,t);
   }
 
   DEBUG_EXIT();
@@ -180,8 +184,6 @@ antlrcpp::Any SymbolsVisitor::visitType(AslParser::TypeContext *ctx) {
 
 antlrcpp::Any SymbolsVisitor::visitSimple_type(AslParser::Simple_typeContext *ctx) {
   DEBUG_ENTER();
-  std::cout<<"Eligiendo tipo " <<std::endl;
-  std::cout<<ctx->getText()<<std::endl;
   
   TypesMgr::TypeId t = Types.createErrorTy();
 
@@ -197,7 +199,8 @@ antlrcpp::Any SymbolsVisitor::visitSimple_type(AslParser::Simple_typeContext *ct
   if(ctx->CHAR()){
     t = Types.createCharacterTy();
   }
-    std::cout<<"Tipo de t en SV" <<t<<std::endl;
+
+  putTypeDecor(ctx,t);
 
   DEBUG_EXIT();
 
