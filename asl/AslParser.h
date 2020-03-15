@@ -15,10 +15,10 @@ public:
     T__0 = 1, T__1 = 2, T__2 = 3, ASSIGN = 4, AND = 5, OR = 6, EQUAL = 7, 
     NE = 8, NOT = 9, LT = 10, GT = 11, GTE = 12, LTE = 13, PLUS = 14, SUB = 15, 
     LP = 16, RP = 17, LC = 18, RC = 19, BOOL = 20, FLOAT = 21, CHAR = 22, 
-    MUL = 23, DIV = 24, VAR = 25, ARRAY = 26, INT = 27, BOOLVAL = 28, IF = 29, 
-    THEN = 30, ELSE = 31, WHILE = 32, ENDWHILE = 33, DO = 34, RETURN = 35, 
-    ENDIF = 36, FUNC = 37, ENDFUNC = 38, READ = 39, WRITE = 40, ID = 41, 
-    INTVAL = 42, FLOATVAL = 43, CHARVAL = 44, COMMA = 45, STRING = 46, COMMENT = 47, 
+    MUL = 23, DIV = 24, VAR = 25, ARRAY = 26, INT = 27, IF = 28, THEN = 29, 
+    ELSE = 30, WHILE = 31, ENDWHILE = 32, DO = 33, RETURN = 34, ENDIF = 35, 
+    FUNC = 36, ENDFUNC = 37, READ = 38, WRITE = 39, INTVAL = 40, FLOATVAL = 41, 
+    BOOLVAL = 42, CHARVAL = 43, ID = 44, COMMA = 45, STRING = 46, COMMENT = 47, 
     WS = 48
   };
 
@@ -240,6 +240,10 @@ public:
     IdentContext *ident();
     antlr4::tree::TerminalNode *LP();
     antlr4::tree::TerminalNode *RP();
+    std::vector<ExprContext *> expr();
+    ExprContext* expr(size_t i);
+    std::vector<antlr4::tree::TerminalNode *> COMMA();
+    antlr4::tree::TerminalNode* COMMA(size_t i);
 
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
@@ -388,15 +392,6 @@ public:
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
-  class  ExprIdentContext : public ExprContext {
-  public:
-    ExprIdentContext(ExprContext *ctx);
-
-    IdentContext *ident();
-
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
   class  FuncValueContext : public ExprContext {
   public:
     FuncValueContext(ExprContext *ctx);
@@ -408,6 +403,15 @@ public:
     ExprContext* expr(size_t i);
     std::vector<antlr4::tree::TerminalNode *> COMMA();
     antlr4::tree::TerminalNode* COMMA(size_t i);
+
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
+  class  ExprIdentContext : public ExprContext {
+  public:
+    ExprIdentContext(ExprContext *ctx);
+
+    IdentContext *ident();
 
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };

@@ -144,19 +144,24 @@ antlrcpp::Any TypeCheckVisitor::visitArrayPos(AslParser::ArrayPosContext *ctx) {
   TypesMgr::TypeId id = getTypeDecor(ctx->ident());
   TypesMgr::TypeId expr = getTypeDecor(ctx->expr());
 
+  TypesMgr::TypeId type = Types.createErrorTy();
   //std::cout<<id.getTypeKind()<<std::endl;
 
   if(not Types.isArrayTy(id)) {
     Errors.nonArrayInArrayAccess(ctx->ident());
+    
+  }
+  else{
+    type = Types.getArrayElemType(id);
   }
   
   if (not Types.isIntegerTy(expr)){
     Errors.nonIntegerIndexInArrayAccess(ctx->expr());
   }
 
-  putTypeDecor(ctx, id);
-  bool b = getIsLValueDecor(ctx);
-  putIsLValueDecor(ctx, b);
+  putTypeDecor(ctx, type);
+  //bool b = getIsLValueDecor(ctx);
+  putIsLValueDecor(ctx, true);
 
   DEBUG_EXIT();
 
@@ -191,6 +196,7 @@ antlrcpp::Any TypeCheckVisitor::visitProcCall(AslParser::ProcCallContext *ctx) {
   if (not Types.isFunctionTy(t1) and not Types.isErrorTy(t1)) {
     Errors.isNotCallable(ctx->ident());
   }
+  
   DEBUG_EXIT();
   return 0;
 }
@@ -316,6 +322,8 @@ antlrcpp::Any TypeCheckVisitor::visitRelational(AslParser::RelationalContext *ct
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
   std::string oper = ctx->op->getText();
   
+  //std::cout<<ctx->expr(0)->getText()<<"  " <<ctx->expr(1)->getText()<<std::endl;
+
   if ((not Types.isErrorTy(t1)) and (not Types.isErrorTy(t2)) and
       (not Types.comparableTypes(t1, t2, oper)))
     Errors.incompatibleOperator(ctx->op);
@@ -388,9 +396,30 @@ antlrcpp::Any TypeCheckVisitor::visitFuncValue(AslParser::FuncValueContext *ctx)
   if (not Types.isFunctionTy(t1)) {
     Errors.isNotCallable(ctx->ident());
   }
+
+  
   else{
     t = Types.getFuncReturnType(t1);
+    if (Types.isVoidFunction(t1)){
+      Errors.isNotFunction(ctx->ident());
+      t = Types.createErrorTy();
+        
+    }
+
     // std::cout<<t<<std::endl;
+    if(Types.getNumOfParameters(t1) != ctx->expr().size()){
+      Errors.numberOfParameters(ctx->ident());
+    }
+
+    else{
+
+      for(uint i = 0; i < ctx->expr().size(); ++i){
+        visit(ctx->expr(i));
+        TypesMgr::TypeId p1type = Types.getParameterType(t1, i);
+        TypesMgr::TypeId p2type = getTypeDecor(ctx->expr(i));
+        if(p1type != p2type) Errors.incompatibleParameter(ctx->expr(i),i,ctx->ident());
+      }
+    }
     putTypeDecor(ctx, t);
   
     putIsLValueDecor(ctx, false);

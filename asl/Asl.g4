@@ -40,7 +40,7 @@ program : function+ EOF
 function
         : FUNC ID '(' function_params ')'(':' type)? declarations statements ENDFUNC
         ;
-        
+
 function_params
         :( | ID ':' type (COMMA ID ':' type)* )
         ;
@@ -82,7 +82,7 @@ statement
           // if-then-else statement (else is optional)
         | IF expr THEN statements ENDIF       # ifStmt
           // A function/procedure call has a list of arguments in parenthesis (possibly empty)
-        | ident '(' ')' ';'                   # procCall
+        | ident '(' (expr (',' expr)* )? ')' ';'                   # procCall
         
         | WHILE  expr DO statements ENDWHILE  # whileStmt
           // Read a variable
@@ -102,16 +102,16 @@ left_expr
 // Grammar for expressions with boolean, relational and aritmetic operators
 expr    : LP expr RP                                # parenthesis
         | ident LC expr RC                          # arrayPos
-        | (INTVAL|FLOATVAL|CHARVAL|BOOLVAL)         # value
+        | ident '(' (expr (',' expr)* )? ')'        # funcValue
+        | op=NOT expr                               # not
         | (SUB) (INTVAL|FLOATVAL|CHARVAL|BOOLVAL)   # negvalue
-        | ident                                     # exprIdent
-        | ident LP (expr (',' expr)*)? RP           # funcValue
-        | (SUB) ident                               # negExprIdent
         | expr op=(MUL|DIV) expr                    # arithmetic
         | expr op=(PLUS|SUB) expr                   # arithmetic
         | expr op=(EQUAL|LT|LTE|GT|GTE|NE) expr     # relational
         | expr op=(AND|OR) expr                     # logical
-        | op=NOT expr                               # not
+        | (INTVAL|FLOATVAL|CHARVAL|BOOLVAL)         # value
+        | ident                                     # exprIdent
+        | (SUB) ident                               # negExprIdent
         ;
 
 ident   : ID
@@ -145,7 +145,6 @@ DIV       : '/';
 VAR       : 'var';
 ARRAY     : 'array';
 INT       : 'int';
-BOOLVAL   : ('true' | 'false');
 IF        : 'if' ;
 THEN      : 'then' ;
 ELSE      : 'else' ;
@@ -158,10 +157,11 @@ FUNC      : 'func' ;
 ENDFUNC   : 'endfunc' ;
 READ      : 'read' ;
 WRITE     : 'write' ;
-ID        : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')* ;
 INTVAL    : ('0'..'9')+ ;
 FLOATVAL  : ('0'..'9')+ '.' ('0'..'9')+ ;
+BOOLVAL   : ('true' | 'false');
 CHARVAL   : '\'' (ESC_SEQ| ~('\\'|'\'') ) '\'';
+ID        : ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')* ;
 COMMA     : ',';
 
 

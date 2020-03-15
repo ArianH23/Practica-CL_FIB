@@ -63,9 +63,9 @@ public:
 
     virtual antlrcpp::Any visitNegvalue(AslParser::NegvalueContext *context) = 0;
 
-    virtual antlrcpp::Any visitExprIdent(AslParser::ExprIdentContext *context) = 0;
-
     virtual antlrcpp::Any visitFuncValue(AslParser::FuncValueContext *context) = 0;
+
+    virtual antlrcpp::Any visitExprIdent(AslParser::ExprIdentContext *context) = 0;
 
     virtual antlrcpp::Any visitArithmetic(AslParser::ArithmeticContext *context) = 0;
 

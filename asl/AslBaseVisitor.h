@@ -103,11 +103,11 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitExprIdent(AslParser::ExprIdentContext *ctx) override {
+  virtual antlrcpp::Any visitFuncValue(AslParser::FuncValueContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitFuncValue(AslParser::FuncValueContext *ctx) override {
+  virtual antlrcpp::Any visitExprIdent(AslParser::ExprIdentContext *ctx) override {
     return visitChildren(ctx);
   }
 
