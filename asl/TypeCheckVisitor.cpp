@@ -204,6 +204,7 @@ antlrcpp::Any TypeCheckVisitor::visitProcCall(AslParser::ProcCallContext *ctx) {
 antlrcpp::Any TypeCheckVisitor::visitReadStmt(AslParser::ReadStmtContext *ctx) {
   DEBUG_ENTER();
   visit(ctx->left_expr());
+  //std::cout<<ctx->left_expr()->getText()<< " "<< getTypeDecor(ctx->left_expr())<<std::endl;
   TypesMgr::TypeId t1 = getTypeDecor(ctx->left_expr());
   if ((not Types.isErrorTy(t1)) and (not Types.isPrimitiveTy(t1)) and
       (not Types.isFunctionTy(t1)))
@@ -245,17 +246,19 @@ antlrcpp::Any TypeCheckVisitor::visitLeft_expr(AslParser::Left_exprContext *ctx)
     TypesMgr::TypeId id = getTypeDecor(ctx->ident());
     TypesMgr::TypeId ex = getTypeDecor(ctx->expr());
 
-    
-    if(not Types.isArrayTy(id) and not Types.isErrorTy(id)) {
+    bool correct = true;
+    if(not Types.isArrayTy(t1) and not Types.isErrorTy(t1)) {
       Errors.nonArrayInArrayAccess(ctx->ident());
       b = false;
       t1 = Types.createErrorTy();
+      correct=false;
     }
 
     if(not Types.isIntegerTy(ex) and not Types.isErrorTy(ex)) {
       Errors.nonIntegerIndexInArrayAccess(ctx->expr());
-
+      correct=false;
     }
+    if(correct) t1 = Types.getArrayElemType(t1);
   }
   
   //////////////////////////////
