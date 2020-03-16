@@ -418,10 +418,15 @@ antlrcpp::Any TypeCheckVisitor::visitFuncValue(AslParser::FuncValueContext *ctx)
     else{
 
       for(uint i = 0; i < ctx->expr().size(); ++i){
+        //std::cout<<"Numero de param = "<<i<<std::endl;
         visit(ctx->expr(i));
         TypesMgr::TypeId p1type = Types.getParameterType(t1, i);
+        
         TypesMgr::TypeId p2type = getTypeDecor(ctx->expr(i));
-        if(p1type != p2type) Errors.incompatibleParameter(ctx->expr(i),i,ctx->ident());
+        //std::cout<<ctx->getText()<<std::endl;
+
+        //std::cout<<"Tipo de p1 : " << p1type << " y el de p2 es :"  <<p2type<<std::endl;
+        if(not Types.equalTypes(p1type,p2type)) Errors.incompatibleParameter(ctx->expr(i),i,ctx);
       }
     }
     putTypeDecor(ctx, t);

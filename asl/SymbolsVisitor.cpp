@@ -193,9 +193,9 @@ antlrcpp::Any SymbolsVisitor::visitType(AslParser::TypeContext *ctx) {
 
 antlrcpp::Any SymbolsVisitor::visitSimple_type(AslParser::Simple_typeContext *ctx) {
   DEBUG_ENTER();
-  
+  //std::cout<<std::endl;
   TypesMgr::TypeId t = Types.createErrorTy();
-
+  //std::cout<< "El type que declarare es "<<ctx->getText()<<std::endl;
   if(ctx->INT()){
     t = Types.createIntegerTy();
   }
@@ -208,6 +208,7 @@ antlrcpp::Any SymbolsVisitor::visitSimple_type(AslParser::Simple_typeContext *ct
   if(ctx->CHAR()){
     t = Types.createCharacterTy();
   }
+    //std::cout<<"Al final es "<<t<<std::endl;
 
   putTypeDecor(ctx,t);
 
@@ -217,10 +218,11 @@ antlrcpp::Any SymbolsVisitor::visitSimple_type(AslParser::Simple_typeContext *ct
 }
 antlrcpp::Any SymbolsVisitor::visitArray_type(AslParser::Array_typeContext *ctx) {
   DEBUG_ENTER();
+  visit(ctx->simple_type());
   int s = std::stoi(ctx->INTVAL()->getText());
 
   TypesMgr::TypeId tipo = getTypeDecor(ctx->simple_type());
-
+  //std::cout<<"Tipo del array :" <<tipo<<" que era " <<ctx->simple_type()->getText()<<std::endl;
   TypesMgr::TypeId ins = Types.createArrayTy(s, tipo);
 
   putTypeDecor(ctx, ins);
