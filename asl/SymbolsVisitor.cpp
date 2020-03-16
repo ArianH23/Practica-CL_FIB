@@ -95,7 +95,7 @@ antlrcpp::Any SymbolsVisitor::visitFunction(AslParser::FunctionContext *ctx) {
   }
   else {
     std::vector<TypesMgr::TypeId> lParamsTy;
-    TypesMgr::TypeId tRet = Types.createVoidTy();
+    TypesMgr::TypeId tRet;// = Types.createVoidTy();
     if(ctx->type()){
 
       visit(ctx->type());
@@ -103,15 +103,19 @@ antlrcpp::Any SymbolsVisitor::visitFunction(AslParser::FunctionContext *ctx) {
       tRet = t1;
       
     }
+    else tRet = Types.createVoidTy();
+
     for (auto i : ctx->function_params()->type()){
         lParamsTy.push_back(getTypeDecor(i));
     }
-    //std::cout<<tRet<<std::endl;
+    // std::cout<<tRet<<std::endl;
 
     TypesMgr::TypeId tFunc = Types.createFunctionTy(lParamsTy, tRet);
     Symbols.addFunction(ident, tFunc);
     
-
+    // Symbols.setCurrentFunctionTy(tRet);
+    // std::cout<<"Function set to " <<tRet<<std::endl;
+    // std::cout<<"effectiveky set to " <<Symbols.getCurrentFunctionTy()<<std::endl;
   }
   
   DEBUG_EXIT();
@@ -186,7 +190,7 @@ antlrcpp::Any SymbolsVisitor::visitType(AslParser::TypeContext *ctx) {
     t = getTypeDecor(ctx->array_type());
     putTypeDecor(ctx,t);
   }
-
+  //Symbols.setCurrentFunctionTy(t);
   DEBUG_EXIT();
   return 0;
 }

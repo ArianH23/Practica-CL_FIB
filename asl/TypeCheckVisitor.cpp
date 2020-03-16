@@ -82,10 +82,51 @@ antlrcpp::Any TypeCheckVisitor::visitFunction(AslParser::FunctionContext *ctx) {
   SymTable::ScopeId sc = getScopeDecor(ctx);
   Symbols.pushThisScope(sc);
   // Symbols.print();
+  
+  TypesMgr::TypeId t = Types.createVoidTy();
+  
+  if(ctx->type()){
+    visit(ctx->type());
+    t = getTypeDecor(ctx->type());
+  }
+
+  Symbols.setCurrentFunctionTy(t);//PORQUE NO ES SUFICIENTE CON HACER ESTO EN EL SYMBOLS?? Sirve de algo en el symbols?
+  
+  // std::cout<<ctx->getText()<<std::endl;
+  // std::cout<< "in the visit the type is : " <<Symbols.getCurrentFunctionTy() <<std::endl;
+  
   visit(ctx->statements());
   Symbols.popScope();
   DEBUG_EXIT();
   return 0;
+}
+
+antlrcpp::Any TypeCheckVisitor::visitReturnStmt(AslParser::ReturnStmtContext *ctx) {
+  DEBUG_ENTER();
+  //std::cout<<"hello "<<ctx->getText()<<std::endl;
+  // std::cout<<ctx->getText()<<std::endl;
+  // std::cout<< "in the visit the type is : " <<Symbols.getCurrentFunctionTy() <<std::endl;
+  TypesMgr::TypeId t1 = Symbols.getCurrentFunctionTy();
+
+  if(ctx->expr()){
+    visit(ctx->expr());
+    // std::cout<<ctx->expr()->getText()<<std::endl;
+    TypesMgr::TypeId exp = getTypeDecor(ctx->expr());
+    if(not Types.equalTypes(exp, t1) and not Types.isErrorTy(exp)){
+      if(not (Types.isFloatTy(t1) and Types.isIntegerTy(exp)))
+      Errors.incompatibleReturn(ctx->RETURN());
+    }
+  }
+  else{
+    //std::cout<<"My type is "<<Types.to_string(t1)<<std::endl;
+   if(not Types.equalTypes(Types.createVoidTy(), t1)){
+      Errors.incompatibleReturn(ctx->RETURN());
+    }
+  }
+
+  DEBUG_EXIT();
+  return 0;
+
 }
 
 // antlrcpp::Any TypeCheckVisitor::visitDeclarations(AslParser::DeclarationsContext *ctx) {
@@ -243,7 +284,7 @@ antlrcpp::Any TypeCheckVisitor::visitLeft_expr(AslParser::Left_exprContext *ctx)
   /////////////////////////
   if(ctx->expr()){
     visit(ctx->expr());
-    TypesMgr::TypeId id = getTypeDecor(ctx->ident());
+    //TypesMgr::TypeId id = getTypeDecor(ctx->ident());
     TypesMgr::TypeId ex = getTypeDecor(ctx->expr());
 
     bool correct = true;
