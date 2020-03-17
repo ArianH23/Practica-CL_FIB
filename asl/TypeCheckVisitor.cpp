@@ -371,8 +371,6 @@ antlrcpp::Any TypeCheckVisitor::visitArithmetic(AslParser::ArithmeticContext *ct
     Errors.incompatibleOperator(ctx->op);
 
   
-  
-  
   else if(ctx->MOD()and not Types.isErrorTy(t1) and not Types.isErrorTy(t2)){
     if(not Types.isIntegerTy(t1) or not Types.isIntegerTy(t2)){
       Errors.incompatibleOperator(ctx->op);
@@ -539,7 +537,9 @@ antlrcpp::Any TypeCheckVisitor::visitFuncValue(AslParser::FuncValueContext *ctx)
         //std::cout<<ctx->getText()<<std::endl;
 
         //std::cout<<"Tipo de p1 : " << p1type << " y el de p2 es :"  <<p2type<<std::endl;
-        if(not Types.equalTypes(p1type,p2type)) Errors.incompatibleParameter(ctx->expr(i),i+1,ctx);
+        if(not(Types.isFloatTy(p1type)and Types.isIntegerTy(p2type))){
+          if(not Types.equalTypes(p1type,p2type)) Errors.incompatibleParameter(ctx->expr(i),i+1,ctx);
+        }
       }
     }
     putTypeDecor(ctx, t);
