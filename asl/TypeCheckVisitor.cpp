@@ -160,12 +160,12 @@ antlrcpp::Any TypeCheckVisitor::visitStatements(AslParser::StatementsContext *ct
 antlrcpp::Any TypeCheckVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx) {
   DEBUG_ENTER();
   visit(ctx->left_expr());
-  
-  visit(ctx->expr());
-  
   TypesMgr::TypeId t1 = getTypeDecor(ctx->left_expr());
+
+  visit(ctx->expr());  
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr());
-  //std::cout<<t1<<"  " <<t2<<std::endl;
+
+  // std::cout<<t1<<"  " <<t2<<std::endl;
   if ((not Types.isErrorTy(t1)) and (not Types.isErrorTy(t2)) and
       (not Types.copyableTypes(t1, t2)))
     Errors.incompatibleAssignment(ctx->ASSIGN());
@@ -187,16 +187,19 @@ antlrcpp::Any TypeCheckVisitor::visitArrayPos(AslParser::ArrayPosContext *ctx) {
 
   TypesMgr::TypeId type = Types.createErrorTy();
   //std::cout<<id.getTypeKind()<<std::endl;
-
-  if(not Types.isArrayTy(id)) {
-    Errors.nonArrayInArrayAccess(ctx->ident());
-    
-  }
-  else{
-    type = Types.getArrayElemType(id);
+  if(not Types.isErrorTy(id)){
+    if(not Types.isArrayTy(id)) {
+      // std::cout<<"wtf"<<std::endl;
+      // std::cout<<ctx->getText()<<std::endl;
+      Errors.nonArrayInArrayAccess(ctx);
+      
+    }
+    else{
+      type = Types.getArrayElemType(id);
+    }
   }
   
-  if (not Types.isIntegerTy(expr)){
+  if (not Types.isIntegerTy(expr) and not Types.isErrorTy(expr)){
     Errors.nonIntegerIndexInArrayAccess(ctx->expr());
   }
 
@@ -280,26 +283,34 @@ antlrcpp::Any TypeCheckVisitor::visitLeft_expr(AslParser::Left_exprContext *ctx)
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
 
   bool b = getIsLValueDecor(ctx->ident());
-  
+  // std::cout<<ctx->getText()<<"       "<<Types.isErrorTy(t1)<<std::endl;
   /////////////////////////
   if(ctx->expr()){
     visit(ctx->expr());
     //TypesMgr::TypeId id = getTypeDecor(ctx->ident());
     TypesMgr::TypeId ex = getTypeDecor(ctx->expr());
 
-    bool correct = true;
-    if(not Types.isArrayTy(t1) and not Types.isErrorTy(t1)) {
+    bool correct = not Types.isErrorTy(t1);
+
+    if((not Types.isErrorTy(t1)) and (not Types.isArrayTy(t1))) {
+
       Errors.nonArrayInArrayAccess(ctx->ident());
       b = false;
       t1 = Types.createErrorTy();
       correct=false;
+     // std::cout<<"Valor de correct cambiado"<<correct<<std::endl;
+
     }
+     // std::cout<<"Correct tiene valor"<<correct<<std::endl;
 
     if(not Types.isIntegerTy(ex) and not Types.isErrorTy(ex)) {
       Errors.nonIntegerIndexInArrayAccess(ctx->expr());
       correct=false;
     }
-    if(correct) t1 = Types.getArrayElemType(t1);
+    if(correct){
+       b = true;
+       t1 = Types.getArrayElemType(t1);
+    }
   }
   
   //////////////////////////////
@@ -499,12 +510,15 @@ antlrcpp::Any TypeCheckVisitor::visitIdent(AslParser::IdentContext *ctx) {
   DEBUG_ENTER();
   std::string ident = ctx->getText();
   if (Symbols.findInStack(ident) == -1) {
+  //std::cout<< ident <<" es erroneo " <<std::endl;
     Errors.undeclaredIdent(ctx->ID());
     TypesMgr::TypeId te = Types.createErrorTy();
     putTypeDecor(ctx, te);
     putIsLValueDecor(ctx, true);
   }
   else {
+      //std::cout<< ident <<" es correcto " <<std::endl;
+
     TypesMgr::TypeId t1 = Symbols.getType(ident);
     putTypeDecor(ctx, t1);
     if (Symbols.isFunctionClass(ident))

@@ -82,7 +82,7 @@ statement
           // if-then-else statement (else is optional)
         | IF expr THEN statements ENDIF       # ifStmt
           // A function/procedure call has a list of arguments in parenthesis (possibly empty)
-        | ident '(' (expr (',' expr)* )? ')' ';'                   # procCall
+        | ident '(' (expr (',' expr)* )? ')' ';'  # procCall
         
         | WHILE  expr DO statements ENDWHILE  # whileStmt
           // Read a variable
