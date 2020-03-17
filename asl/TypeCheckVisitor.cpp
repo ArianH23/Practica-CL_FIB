@@ -481,7 +481,7 @@ antlrcpp::Any TypeCheckVisitor::visitFuncValue(AslParser::FuncValueContext *ctx)
         //std::cout<<ctx->getText()<<std::endl;
 
         //std::cout<<"Tipo de p1 : " << p1type << " y el de p2 es :"  <<p2type<<std::endl;
-        if(not Types.equalTypes(p1type,p2type)) Errors.incompatibleParameter(ctx->expr(i),i,ctx);
+        if(not Types.equalTypes(p1type,p2type)) Errors.incompatibleParameter(ctx->expr(i),i+1,ctx);
       }
     }
     putTypeDecor(ctx, t);
