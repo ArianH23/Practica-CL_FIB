@@ -159,6 +159,7 @@ antlrcpp::Any TypeCheckVisitor::visitStatements(AslParser::StatementsContext *ct
 
 antlrcpp::Any TypeCheckVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx) {
   DEBUG_ENTER();
+  //std::cout<<ctx->getText()<<std::endl;
   visit(ctx->left_expr());
   TypesMgr::TypeId t1 = getTypeDecor(ctx->left_expr());
 
@@ -235,10 +236,47 @@ antlrcpp::Any TypeCheckVisitor::visitWhileStmt(AslParser::WhileStmtContext *ctx)
 
 antlrcpp::Any TypeCheckVisitor::visitProcCall(AslParser::ProcCallContext *ctx) {
   DEBUG_ENTER();
+    //std::cout<<ctx->getText()<<std::endl;
+
   visit(ctx->ident());
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
+
   if (not Types.isFunctionTy(t1) and not Types.isErrorTy(t1)) {
+      //std::cout<<"I die"<<std::endl;
+
     Errors.isNotCallable(ctx->ident());
+  }
+
+  
+  else if(not Types.isErrorTy(t1)){
+    //std::cout<<t1<<std::endl;
+    // std::cout<<t<<std::endl;
+
+    for(uint i = 0; i < ctx->expr().size(); ++i){
+      //std::cout<<"Numero de param = "<<i<<std::endl;
+      visit(ctx->expr(i));
+    }
+    if(Types.getNumOfParameters(t1) != ctx->expr().size()){
+      Errors.numberOfParameters(ctx->ident());
+    }
+    else{
+      for(uint i = 0; i < ctx->expr().size(); ++i){
+        //std::cout<<"Numero de param = "<<i<<std::endl;
+        visit(ctx->expr(i));
+        TypesMgr::TypeId p1type = Types.getParameterType(t1, i);
+        
+        TypesMgr::TypeId p2type = getTypeDecor(ctx->expr(i));
+        //std::cout<<ctx->getText()<<std::endl;
+
+        //std::cout<<"Tipo de p1 : " << p1type << " y el de p2 es :"  <<p2type<<std::endl;
+        if(not Types.equalTypes(p1type,p2type)) Errors.incompatibleParameter(ctx->expr(i),i+1,ctx);
+      }
+    }
+    
+    // putTypeDecor(ctx, t);
+  
+    // putIsLValueDecor(ctx, false);
+
   }
   
   DEBUG_EXIT();
@@ -452,7 +490,7 @@ antlrcpp::Any TypeCheckVisitor::visitFuncValue(AslParser::FuncValueContext *ctx)
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
   TypesMgr::TypeId t= Types.createErrorTy();
   
-  if (not Types.isFunctionTy(t1)) {
+  if (not Types.isFunctionTy(t1)and not Types.isErrorTy(t1)) {
     Errors.isNotCallable(ctx->ident());
   }
 
@@ -464,8 +502,7 @@ antlrcpp::Any TypeCheckVisitor::visitFuncValue(AslParser::FuncValueContext *ctx)
       t = Types.createErrorTy();
         
     }
-
-    // std::cout<<t<<std::endl;
+    
     if(Types.getNumOfParameters(t1) != ctx->expr().size()){
       Errors.numberOfParameters(ctx->ident());
     }
@@ -487,8 +524,6 @@ antlrcpp::Any TypeCheckVisitor::visitFuncValue(AslParser::FuncValueContext *ctx)
     putTypeDecor(ctx, t);
   
     putIsLValueDecor(ctx, false);
-    //std::cout<<t<<std::endl;
-    //std::cout<<"act "<<getTypeDecor(ctx)<<std::endl;
 
   }
   DEBUG_EXIT();
