@@ -365,10 +365,31 @@ antlrcpp::Any TypeCheckVisitor::visitArithmetic(AslParser::ArithmeticContext *ct
   TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
   visit(ctx->expr(1));
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
+  TypesMgr::TypeId t = Types.createErrorTy();
   if (((not Types.isErrorTy(t1)) and (not Types.isNumericTy(t1))) or
       ((not Types.isErrorTy(t2)) and (not Types.isNumericTy(t2))))
     Errors.incompatibleOperator(ctx->op);
-  TypesMgr::TypeId t = Types.createIntegerTy();
+
+  
+  
+  
+  else if(ctx->MOD()and not Types.isErrorTy(t1) and not Types.isErrorTy(t2)){
+    if(not Types.isIntegerTy(t1) or not Types.isIntegerTy(t2)){
+      Errors.incompatibleOperator(ctx->op);
+
+    }
+    else{
+      t = Types.createIntegerTy();
+    }
+  }
+
+  if(Types.isFloatTy(t1) or Types.isFloatTy(t2)){
+    t = Types.createFloatTy();
+  }
+  else{
+    t = Types.createIntegerTy();
+  }
+  
   putTypeDecor(ctx, t);
   putIsLValueDecor(ctx, false);
   DEBUG_EXIT();

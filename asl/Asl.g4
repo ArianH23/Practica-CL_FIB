@@ -105,7 +105,7 @@ expr    : LP expr RP                                # parenthesis
         | ident '(' (expr (',' expr)* )? ')'        # funcValue
         | op=NOT expr                               # not
         | (SUB) (INTVAL|FLOATVAL|CHARVAL|BOOLVAL)   # negvalue
-        | expr op=(MUL|DIV) expr                    # arithmetic
+        | expr op=(MUL|DIV|MOD) expr                # arithmetic
         | expr op=(PLUS|SUB) expr                   # arithmetic
         | expr op=(EQUAL|LT|LTE|GT|GTE|NE) expr     # relational
         | expr op=(AND|OR) expr                     # logical
@@ -141,6 +141,7 @@ BOOL      : 'bool';
 FLOAT     : 'float';
 CHAR      : 'char';
 MUL       : '*';
+MOD       : '%';
 DIV       : '/';
 VAR       : 'var';
 ARRAY     : 'array';
