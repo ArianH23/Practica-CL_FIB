@@ -95,11 +95,11 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitArrayPos(AslParser::ArrayPosContext *ctx) override {
+  virtual antlrcpp::Any visitNegValue(AslParser::NegValueContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitNegvalue(AslParser::NegvalueContext *ctx) override {
+  virtual antlrcpp::Any visitArrayPos(AslParser::ArrayPosContext *ctx) override {
     return visitChildren(ctx);
   }
 

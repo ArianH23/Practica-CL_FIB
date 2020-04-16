@@ -367,6 +367,17 @@ public:
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
 
+  class  NegValueContext : public ExprContext {
+  public:
+    NegValueContext(ExprContext *ctx);
+
+    antlr4::tree::TerminalNode *INTVAL();
+    antlr4::tree::TerminalNode *FLOATVAL();
+    antlr4::tree::TerminalNode *SUB();
+
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+  };
+
   class  ArrayPosContext : public ExprContext {
   public:
     ArrayPosContext(ExprContext *ctx);
@@ -375,19 +386,6 @@ public:
     antlr4::tree::TerminalNode *LC();
     ExprContext *expr();
     antlr4::tree::TerminalNode *RC();
-
-    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
-  };
-
-  class  NegvalueContext : public ExprContext {
-  public:
-    NegvalueContext(ExprContext *ctx);
-
-    antlr4::tree::TerminalNode *INTVAL();
-    antlr4::tree::TerminalNode *FLOATVAL();
-    antlr4::tree::TerminalNode *CHARVAL();
-    antlr4::tree::TerminalNode *BOOLVAL();
-    antlr4::tree::TerminalNode *SUB();
 
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };

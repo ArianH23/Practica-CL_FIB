@@ -107,8 +107,9 @@ antlrcpp::Any TypeCheckVisitor::visitReturnStmt(AslParser::ReturnStmtContext *ct
 
     TypesMgr::TypeId exp = getTypeDecor(ctx->expr());
     if(not Types.equalTypes(exp, t1) and not Types.isErrorTy(exp)){
-      if(not (Types.isFloatTy(t1) and Types.isIntegerTy(exp)))
-      Errors.incompatibleReturn(ctx->RETURN());
+      if(not (Types.isFloatTy(t1) and Types.isIntegerTy(exp))){
+        Errors.incompatibleReturn(ctx->RETURN());
+      }
     }
   }
   else{
@@ -182,9 +183,7 @@ antlrcpp::Any TypeCheckVisitor::visitArrayPos(AslParser::ArrayPosContext *ctx) {
 
   if(not Types.isErrorTy(id)){
     if(not Types.isArrayTy(id)) {
-      
-      Errors.nonArrayInArrayAccess(ctx);
-      
+      Errors.nonArrayInArrayAccess(ctx); 
     }
     else{
       type = Types.getArrayElemType(id);
@@ -232,11 +231,9 @@ antlrcpp::Any TypeCheckVisitor::visitProcCall(AslParser::ProcCallContext *ctx) {
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
 
   if (not Types.isFunctionTy(t1) and not Types.isErrorTy(t1)) {
-
     Errors.isNotCallable(ctx->ident());
   }
 
-  
   else if(not Types.isErrorTy(t1)){
 
     for(uint i = 0; i < ctx->expr().size(); ++i){
@@ -252,7 +249,7 @@ antlrcpp::Any TypeCheckVisitor::visitProcCall(AslParser::ProcCallContext *ctx) {
         
         TypesMgr::TypeId p2type = getTypeDecor(ctx->expr(i));
 
-        if(not Types.equalTypes(p1type,p2type)) Errors.incompatibleParameter(ctx->expr(i),i+1,ctx);
+        if(not Types.equalTypes(p1type, p2type)) Errors.incompatibleParameter(ctx->expr(i), i+1, ctx);
       }
     }
   }
@@ -298,7 +295,7 @@ antlrcpp::Any TypeCheckVisitor::visitLeft_expr(AslParser::Left_exprContext *ctx)
   
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
 
-  bool b = getIsLValueDecor(ctx->ident());
+  bool left = getIsLValueDecor(ctx->ident());
 
   if(ctx->expr()){
     visit(ctx->expr());
@@ -310,7 +307,7 @@ antlrcpp::Any TypeCheckVisitor::visitLeft_expr(AslParser::Left_exprContext *ctx)
     if((not Types.isErrorTy(t1)) and (not Types.isArrayTy(t1))) {
 
       Errors.nonArrayInArrayAccess(ctx->ident());
-      b = false;
+      left = false;
       t1 = Types.createErrorTy();
       correct=false;
 
@@ -321,13 +318,12 @@ antlrcpp::Any TypeCheckVisitor::visitLeft_expr(AslParser::Left_exprContext *ctx)
       correct=false;
     }
     if(correct){
-       b = true;
        t1 = Types.getArrayElemType(t1);
     }
   }
 
   putTypeDecor(ctx, t1);
-  putIsLValueDecor(ctx, b);
+  putIsLValueDecor(ctx, left);
   DEBUG_EXIT();
   return 0;
 }
@@ -339,15 +335,14 @@ antlrcpp::Any TypeCheckVisitor::visitArithmetic(AslParser::ArithmeticContext *ct
   visit(ctx->expr(1));
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
   TypesMgr::TypeId t = Types.createErrorTy();
-  if (((not Types.isErrorTy(t1)) and (not Types.isNumericTy(t1))) or
+
+  if (((not Types.isErrorTy(t1)) and (not Types.isNumericTy(t1))) or    //Si no son numeros
       ((not Types.isErrorTy(t2)) and (not Types.isNumericTy(t2))))
     Errors.incompatibleOperator(ctx->op);
 
-  
-  else if(ctx->MOD()and not Types.isErrorTy(t1) and not Types.isErrorTy(t2)){
+  else if(ctx->MOD() and not Types.isErrorTy(t1) and not Types.isErrorTy(t2)){ // Si hay un MOD y ambos deben ser INTS
     if(not Types.isIntegerTy(t1) or not Types.isIntegerTy(t2)){
       Errors.incompatibleOperator(ctx->op);
-
     }
     else{
       t = Types.createIntegerTy();
@@ -374,8 +369,6 @@ antlrcpp::Any TypeCheckVisitor::visitLogical(AslParser::LogicalContext *ctx) {
   visit(ctx->expr(1));
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
   
-  
-
   if (((not Types.isErrorTy(t1)) and (not Types.isBooleanTy(t1))) or
       ((not Types.isErrorTy(t2)) and (not Types.isBooleanTy(t2))))
     Errors.incompatibleOperator(ctx->op);
@@ -410,14 +403,15 @@ antlrcpp::Any TypeCheckVisitor::visitRelational(AslParser::RelationalContext *ct
   visit(ctx->expr(1));
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
   std::string oper = ctx->op->getText();
-  
 
   if ((not Types.isErrorTy(t1)) and (not Types.isErrorTy(t2)) and
       (not Types.comparableTypes(t1, t2, oper)))
     Errors.incompatibleOperator(ctx->op);
+
   TypesMgr::TypeId t = Types.createBooleanTy();
   putTypeDecor(ctx, t);
   putIsLValueDecor(ctx, false);
+  
   DEBUG_EXIT();
   return 0;
 }
@@ -446,14 +440,17 @@ antlrcpp::Any TypeCheckVisitor::visitValue(AslParser::ValueContext *ctx) {
   return 0;
 }
 
-antlrcpp::Any TypeCheckVisitor::visitNegvalue(AslParser::NegvalueContext *ctx) {
+antlrcpp::Any TypeCheckVisitor::visitNegValue(AslParser::NegValueContext *ctx) {
   DEBUG_ENTER();
-    TypesMgr::TypeId t;
+  TypesMgr::TypeId t;
+  t = Types.createErrorTy();
 
   if(ctx->INTVAL()){
-  t = Types.createIntegerTy();
+    t = Types.createIntegerTy();
   }
-  
+  else if(ctx->FLOATVAL()){
+    t = Types.createFloatTy();
+  }
   
   putTypeDecor(ctx, t);
   putIsLValueDecor(ctx, false);
@@ -466,10 +463,10 @@ antlrcpp::Any TypeCheckVisitor::visitExprIdent(AslParser::ExprIdentContext *ctx)
   visit(ctx->ident());
   
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
-  
+  bool left = getIsLValueDecor(ctx->ident());
+
   putTypeDecor(ctx, t1);
-  bool b = getIsLValueDecor(ctx->ident());
-  putIsLValueDecor(ctx, b);
+  putIsLValueDecor(ctx, left);
   DEBUG_EXIT();
   return 0;
 }
@@ -480,17 +477,16 @@ antlrcpp::Any TypeCheckVisitor::visitFuncValue(AslParser::FuncValueContext *ctx)
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
   TypesMgr::TypeId t= Types.createErrorTy();
   
-  if (not Types.isFunctionTy(t1)and not Types.isErrorTy(t1)) {
+  if (not Types.isFunctionTy(t1) and not Types.isErrorTy(t1)) {
     Errors.isNotCallable(ctx->ident());
   }
 
-  
   else{
     t = Types.getFuncReturnType(t1);
+
     if (Types.isVoidFunction(t1)){
       Errors.isNotFunction(ctx->ident());
-      t = Types.createErrorTy();
-        
+      t = Types.createErrorTy();     
     }
     
     if(Types.getNumOfParameters(t1) != ctx->expr().size()){
@@ -523,10 +519,12 @@ antlrcpp::Any TypeCheckVisitor::visitFuncValue(AslParser::FuncValueContext *ctx)
 antlrcpp::Any TypeCheckVisitor::visitNegExprIdent(AslParser::NegExprIdentContext *ctx) {
   DEBUG_ENTER();
   visit(ctx->ident());
+
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
+  bool left = getIsLValueDecor(ctx->ident());
+
   putTypeDecor(ctx, t1);
-  bool b = getIsLValueDecor(ctx->ident());
-  putIsLValueDecor(ctx, b);
+  putIsLValueDecor(ctx, left);
   DEBUG_EXIT();
   return 0;
 }

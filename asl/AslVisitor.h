@@ -59,9 +59,9 @@ public:
 
     virtual antlrcpp::Any visitNot(AslParser::NotContext *context) = 0;
 
-    virtual antlrcpp::Any visitArrayPos(AslParser::ArrayPosContext *context) = 0;
+    virtual antlrcpp::Any visitNegValue(AslParser::NegValueContext *context) = 0;
 
-    virtual antlrcpp::Any visitNegvalue(AslParser::NegvalueContext *context) = 0;
+    virtual antlrcpp::Any visitArrayPos(AslParser::ArrayPosContext *context) = 0;
 
     virtual antlrcpp::Any visitFuncValue(AslParser::FuncValueContext *context) = 0;
 

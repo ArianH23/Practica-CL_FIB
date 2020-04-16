@@ -82,7 +82,7 @@ public:
   antlrcpp::Any visitIdent(AslParser::IdentContext *ctx);
   antlrcpp::Any visitLogical(AslParser::LogicalContext *ctx);
   antlrcpp::Any visitNot(AslParser::NotContext *ctx);
-  antlrcpp::Any visitNegvalue(AslParser::NegvalueContext *ctx);
+  antlrcpp::Any visitNegValue(AslParser::NegValueContext *ctx);
   antlrcpp::Any visitNegExprIdent(AslParser::NegExprIdentContext *ctx);
   antlrcpp::Any visitArrayPos(AslParser::ArrayPosContext *ctx);
   antlrcpp::Any visitFuncValue(AslParser::FuncValueContext *ctx);

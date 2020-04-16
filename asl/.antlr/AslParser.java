@@ -1,4 +1,4 @@
-// Generated from /home/arian/Uni/CL/Practica-CL/asl/Asl.g4 by ANTLR 4.7.1
+// Generated from /home/arian/Uni/CL/Practica-CL-real/asl/Asl.g4 by ANTLR 4.7.1
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -982,6 +982,12 @@ public class AslParser extends Parser {
 		public TerminalNode NOT() { return getToken(AslParser.NOT, 0); }
 		public NotContext(ExprContext ctx) { copyFrom(ctx); }
 	}
+	public static class NegValueContext extends ExprContext {
+		public TerminalNode INTVAL() { return getToken(AslParser.INTVAL, 0); }
+		public TerminalNode FLOATVAL() { return getToken(AslParser.FLOATVAL, 0); }
+		public TerminalNode SUB() { return getToken(AslParser.SUB, 0); }
+		public NegValueContext(ExprContext ctx) { copyFrom(ctx); }
+	}
 	public static class ArrayPosContext extends ExprContext {
 		public IdentContext ident() {
 			return getRuleContext(IdentContext.class,0);
@@ -992,14 +998,6 @@ public class AslParser extends Parser {
 		}
 		public TerminalNode RC() { return getToken(AslParser.RC, 0); }
 		public ArrayPosContext(ExprContext ctx) { copyFrom(ctx); }
-	}
-	public static class NegvalueContext extends ExprContext {
-		public TerminalNode INTVAL() { return getToken(AslParser.INTVAL, 0); }
-		public TerminalNode FLOATVAL() { return getToken(AslParser.FLOATVAL, 0); }
-		public TerminalNode CHARVAL() { return getToken(AslParser.CHARVAL, 0); }
-		public TerminalNode BOOLVAL() { return getToken(AslParser.BOOLVAL, 0); }
-		public TerminalNode SUB() { return getToken(AslParser.SUB, 0); }
-		public NegvalueContext(ExprContext ctx) { copyFrom(ctx); }
 	}
 	public static class FuncValueContext extends ExprContext {
 		public IdentContext ident() {
@@ -1185,7 +1183,7 @@ public class AslParser extends Parser {
 				break;
 			case 5:
 				{
-				_localctx = new NegvalueContext(_localctx);
+				_localctx = new NegValueContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
 				{
@@ -1194,7 +1192,7 @@ public class AslParser extends Parser {
 				}
 				setState(198);
 				_la = _input.LA(1);
-				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << INTVAL) | (1L << FLOATVAL) | (1L << BOOLVAL) | (1L << CHARVAL))) != 0)) ) {
+				if ( !(_la==INTVAL || _la==FLOATVAL) ) {
 				_errHandler.recoverInline(this);
 				}
 				else {
@@ -1427,9 +1425,9 @@ public class AslParser extends Parser {
 		"\n\16\f\16\16\16\u00c0\13\16\5\16\u00c2\n\16\3\16\3\16\3\16\3\16\3\16"+
 		"\3\16\3\16\3\16\3\16\3\16\5\16\u00ce\n\16\3\16\3\16\3\16\3\16\3\16\3\16"+
 		"\3\16\3\16\3\16\3\16\3\16\3\16\7\16\u00dc\n\16\f\16\16\16\u00df\13\16"+
-		"\3\17\3\17\3\17\2\3\32\20\2\4\6\b\n\f\16\20\22\24\26\30\32\34\2\b\4\2"+
-		"\26\30\36\36\3\2+.\3\2\31\33\3\2\20\21\4\2\t\n\f\17\3\2\7\b\2\u00f6\2"+
-		"\37\3\2\2\2\4%\3\2\2\2\6?\3\2\2\2\bA\3\2\2\2\nR\3\2\2\2\fU\3\2\2\2\16"+
+		"\3\17\3\17\3\17\2\3\32\20\2\4\6\b\n\f\16\20\22\24\26\30\32\34\2\t\4\2"+
+		"\26\30\36\36\3\2+,\3\2+.\3\2\31\33\3\2\20\21\4\2\t\n\f\17\3\2\7\b\2\u00f6"+
+		"\2\37\3\2\2\2\4%\3\2\2\2\6?\3\2\2\2\bA\3\2\2\2\nR\3\2\2\2\fU\3\2\2\2\16"+
 		"a\3\2\2\2\20h\3\2\2\2\22l\3\2\2\2\24q\3\2\2\2\26\u00a4\3\2\2\2\30\u00a6"+
 		"\3\2\2\2\32\u00cd\3\2\2\2\34\u00e0\3\2\2\2\36 \5\4\3\2\37\36\3\2\2\2 "+
 		"!\3\2\2\2!\37\3\2\2\2!\"\3\2\2\2\"#\3\2\2\2#$\7\2\2\3$\3\3\2\2\2%&\7\'"+
@@ -1473,14 +1471,14 @@ public class AslParser extends Parser {
 		"\2\2\u00bf\u00c2\3\2\2\2\u00c0\u00be\3\2\2\2\u00c1\u00b9\3\2\2\2\u00c1"+
 		"\u00c2\3\2\2\2\u00c2\u00c3\3\2\2\2\u00c3\u00c4\7\23\2\2\u00c4\u00ce\3"+
 		"\2\2\2\u00c5\u00c6\7\13\2\2\u00c6\u00ce\5\32\16\13\u00c7\u00c8\7\21\2"+
-		"\2\u00c8\u00ce\t\3\2\2\u00c9\u00ce\t\3\2\2\u00ca\u00ce\5\34\17\2\u00cb"+
+		"\2\u00c8\u00ce\t\3\2\2\u00c9\u00ce\t\4\2\2\u00ca\u00ce\5\34\17\2\u00cb"+
 		"\u00cc\7\21\2\2\u00cc\u00ce\5\34\17\2\u00cd\u00ad\3\2\2\2\u00cd\u00b2"+
 		"\3\2\2\2\u00cd\u00b7\3\2\2\2\u00cd\u00c5\3\2\2\2\u00cd\u00c7\3\2\2\2\u00cd"+
 		"\u00c9\3\2\2\2\u00cd\u00ca\3\2\2\2\u00cd\u00cb\3\2\2\2\u00ce\u00dd\3\2"+
-		"\2\2\u00cf\u00d0\f\t\2\2\u00d0\u00d1\t\4\2\2\u00d1\u00dc\5\32\16\n\u00d2"+
-		"\u00d3\f\b\2\2\u00d3\u00d4\t\5\2\2\u00d4\u00dc\5\32\16\t\u00d5\u00d6\f"+
-		"\7\2\2\u00d6\u00d7\t\6\2\2\u00d7\u00dc\5\32\16\b\u00d8\u00d9\f\6\2\2\u00d9"+
-		"\u00da\t\7\2\2\u00da\u00dc\5\32\16\7\u00db\u00cf\3\2\2\2\u00db\u00d2\3"+
+		"\2\2\u00cf\u00d0\f\t\2\2\u00d0\u00d1\t\5\2\2\u00d1\u00dc\5\32\16\n\u00d2"+
+		"\u00d3\f\b\2\2\u00d3\u00d4\t\6\2\2\u00d4\u00dc\5\32\16\t\u00d5\u00d6\f"+
+		"\7\2\2\u00d6\u00d7\t\7\2\2\u00d7\u00dc\5\32\16\b\u00d8\u00d9\f\6\2\2\u00d9"+
+		"\u00da\t\b\2\2\u00da\u00dc\5\32\16\7\u00db\u00cf\3\2\2\2\u00db\u00d2\3"+
 		"\2\2\2\u00db\u00d5\3\2\2\2\u00db\u00d8\3\2\2\2\u00dc\u00df\3\2\2\2\u00dd"+
 		"\u00db\3\2\2\2\u00dd\u00de\3\2\2\2\u00de\33\3\2\2\2\u00df\u00dd\3\2\2"+
 		"\2\u00e0\u00e1\7/\2\2\u00e1\35\3\2\2\2\26!,<?HKR[lq\u0086\u0089\u00a1"+
