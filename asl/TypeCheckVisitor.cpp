@@ -335,7 +335,7 @@ antlrcpp::Any TypeCheckVisitor::visitArithmetic(AslParser::ArithmeticContext *ct
   TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
   visit(ctx->expr(1));
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
-  TypesMgr::TypeId t = Types.createErrorTy();
+  TypesMgr::TypeId t = Types.createIntegerTy();
 
   if (((not Types.isErrorTy(t1)) and (not Types.isNumericTy(t1))) or    //Si no son numeros
       ((not Types.isErrorTy(t2)) and (not Types.isNumericTy(t2))))
@@ -369,11 +369,10 @@ antlrcpp::Any TypeCheckVisitor::visitLogical(AslParser::LogicalContext *ctx) {
   TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
   visit(ctx->expr(1));
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
-  
+
   if (((not Types.isErrorTy(t1)) and (not Types.isBooleanTy(t1))) or
       ((not Types.isErrorTy(t2)) and (not Types.isBooleanTy(t2))))
     Errors.incompatibleOperator(ctx->op);
-
 
   TypesMgr::TypeId t = Types.createBooleanTy();
   putTypeDecor(ctx, t);
@@ -445,11 +444,13 @@ antlrcpp::Any TypeCheckVisitor::visitNegValue(AslParser::NegValueContext *ctx) {
   DEBUG_ENTER();
   TypesMgr::TypeId t;
   t = Types.createErrorTy();
+  visit(ctx->expr());
+  TypesMgr::TypeId check = getTypeDecor(ctx->expr());
 
-  if(ctx->INTVAL()){
+  if(Types.isIntegerTy(check)){
     t = Types.createIntegerTy();
   }
-  else if(ctx->FLOATVAL()){
+  else if(Types.isFloatTy(check)){
     t = Types.createFloatTy();
   }
   

@@ -83,6 +83,11 @@ public:
   antlrcpp::Any visitRelational(AslParser::RelationalContext *ctx);
   antlrcpp::Any visitValue(AslParser::ValueContext *ctx);
   antlrcpp::Any visitIdent(AslParser::IdentContext *ctx);
+  antlrcpp::Any visitParenthesis(AslParser::ParenthesisContext *ctx);
+  antlrcpp::Any visitNot(AslParser::NotContext *ctx);
+  antlrcpp::Any visitLogical(AslParser::LogicalContext *ctx);
+  antlrcpp::Any visitNegValue(AslParser::NegValueContext *ctx);
+
 
 private:
 

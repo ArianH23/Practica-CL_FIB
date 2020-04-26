@@ -373,9 +373,8 @@ public:
   public:
     NegValueContext(ExprContext *ctx);
 
-    antlr4::tree::TerminalNode *INTVAL();
-    antlr4::tree::TerminalNode *FLOATVAL();
     antlr4::tree::TerminalNode *SUB();
+    ExprContext *expr();
 
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
