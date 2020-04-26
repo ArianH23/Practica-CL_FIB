@@ -104,8 +104,9 @@ antlrcpp::Any CodeGenVisitor::visitDeclarations(AslParser::DeclarationsContext *
   std::vector<var> lvars;
 
   for (auto & varDeclCtx : ctx->variable_decl()) {
-    var onevar = visit(varDeclCtx);
-    lvars.push_back(onevar);
+    std::vector<var> varset = visit(varDeclCtx);
+    for (auto i : varset)
+    lvars.push_back(i);
   }
   DEBUG_EXIT();
   return lvars;
@@ -114,11 +115,14 @@ antlrcpp::Any CodeGenVisitor::visitDeclarations(AslParser::DeclarationsContext *
 
 antlrcpp::Any CodeGenVisitor::visitVariable_decl(AslParser::Variable_declContext *ctx) {
   DEBUG_ENTER();
-  // std::vector<var> vars;
+  std::vector<var> vars;
   TypesMgr::TypeId   t1 = getTypeDecor(ctx->type());
   std::size_t      size = Types.getSizeOfType(t1);
+  for (auto i : ctx->ID()){
+    vars.push_back(var{i->getText(),size});
+  }
   DEBUG_EXIT();
-  return var{ctx->ID()[0]->getText(), size};
+  return vars;
 }
 
 antlrcpp::Any CodeGenVisitor::visitFunction_params(AslParser::Function_paramsContext *ctx) {
@@ -225,7 +229,12 @@ antlrcpp::Any CodeGenVisitor::visitWriteExpr(AslParser::WriteExprContext *ctx) {
   instructionList &   code1 = codAt1.code;
   instructionList &    code = code1;
   // TypesMgr::TypeId tid1 = getTypeDecor(ctx->expr());
-  code = code1 || instruction::WRITEI(addr1);
+  TypesMgr::TypeId t  = getTypeDecor(ctx->expr());
+  if(Types.isIntegerTy(t) || Types.isBooleanTy(t))
+    code = code1 || instruction::WRITEI(addr1);
+  else if (Types.isFloatTy(t)){
+    code = code1 || instruction::WRITEF(addr1);
+  }
   DEBUG_EXIT();
   return code;
 }
@@ -306,16 +315,33 @@ antlrcpp::Any CodeGenVisitor::visitArithmetic(AslParser::ArithmeticContext *ctx)
     std::string float1 = "%"+codeCounters.newTEMP();
     std::string float2 = "%"+codeCounters.newTEMP();
 
-    instruction cast1 = instruction::FLOAT(float1,addr1);
-    instruction cast2 = instruction::FLOAT(float2,addr2);
+    TypesMgr::TypeId t1  = getTypeDecor(ctx->expr(0));
+    TypesMgr::TypeId t2  = getTypeDecor(ctx->expr(1));
+
+    instruction cast1 = instruction::NOOP();
+    instruction cast2 = instruction::NOOP();
+    
+    if(Types.isIntegerTy(t1)){
+      cast1 = instruction::FLOAT(float1,addr1);
+    }
+    else{
+      cast1 = instruction::LOAD(float1,addr1);
+    }
+
+    if(Types.isIntegerTy(t2)){
+      cast2 = instruction::FLOAT(float2,addr2);
+    }
+    else{
+      cast2 = instruction::LOAD(float2,addr2);
+    }
 
     if (ctx->MUL()){
       code = code || cast1 || cast2 || instruction::FMUL(temp, float1, float2);
     }
-    if (ctx->DIV()){
+    else if (ctx->DIV()){
       code = code || cast1 || cast2 || instruction::FDIV(temp, float1, float2);
     }
-    if (ctx->SUB()){
+    else if (ctx->SUB()){
       code = code || cast1 || cast2 || instruction::FSUB(temp, float1, float2);
     }
     else {
