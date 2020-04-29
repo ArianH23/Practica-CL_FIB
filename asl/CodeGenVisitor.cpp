@@ -82,7 +82,10 @@ antlrcpp::Any CodeGenVisitor::visitFunction(AslParser::FunctionContext *ctx) {
   // ////////////////////
 
   // std::vector<var> && fvars = visit(ctx->function_params());
-  subr.add_param("_result");
+  //Si devuelve algo, entonces reservamos en la pila el resultado.
+  if(ctx->type()){
+    subr.add_param("_result");
+  }
   std::vector<std::string> && fvars = visit(ctx->function_params());
   for (auto & onevar : fvars) {
     subr.add_param(onevar);
@@ -207,7 +210,26 @@ antlrcpp::Any CodeGenVisitor::visitProcCall(AslParser::ProcCallContext *ctx) {
   instructionList code;
   // std::string name = ctx->ident()->ID()->getSymbol()->getText();
   std::string name = ctx->ident()->getText();
-  code = instruction::CALL(name);
+
+  std::string funcionLlamada = ctx->ident()->getText();
+
+  // std::cout<<(ctx->expr()).size()<<std::endl;
+
+  for (uint i = 0; i< (ctx->expr()).size(); ++i){
+    CodeAttribs     && codAt1 = visit(ctx->expr(i));
+    std::string         addr1 = codAt1.addr;
+    instructionList &   code1 = codAt1.code;
+
+    // std::cout<<"xd"<<std::endl;
+    code = code || code1 || instruction::PUSH(addr1);
+  }
+
+  code = code || instruction::CALL(name);
+  
+  for (uint i = 0; i< (ctx->expr()).size(); ++i){
+    code = code || instruction::POP();
+  }
+
   DEBUG_EXIT();
   return code;
 }
