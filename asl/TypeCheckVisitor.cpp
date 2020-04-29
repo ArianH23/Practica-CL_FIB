@@ -556,6 +556,18 @@ antlrcpp::Any TypeCheckVisitor::visitIdent(AslParser::IdentContext *ctx) {
   DEBUG_EXIT();
   return 0;
 }
+antlrcpp::Any TypeCheckVisitor::visitParenthesis(AslParser::ParenthesisContext *ctx) {
+  DEBUG_ENTER();
+
+  visit(ctx->expr());
+
+  putTypeDecor(ctx, getTypeDecor(ctx->expr()));
+  putIsLValueDecor(ctx, getIsLValueDecor(ctx->expr()));
+
+  DEBUG_EXIT();
+  return 0;
+
+}
 
 
 // Getters for the necessary tree node atributes:

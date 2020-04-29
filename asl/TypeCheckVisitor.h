@@ -87,6 +87,7 @@ public:
   antlrcpp::Any visitArrayPos(AslParser::ArrayPosContext *ctx);
   antlrcpp::Any visitFuncValue(AslParser::FuncValueContext *ctx);
   antlrcpp::Any visitReturnStmt(AslParser::ReturnStmtContext *ctx);
+  antlrcpp::Any visitParenthesis(AslParser::ParenthesisContext *ctx);
 
   
 private:
