@@ -249,8 +249,11 @@ antlrcpp::Any TypeCheckVisitor::visitProcCall(AslParser::ProcCallContext *ctx) {
         TypesMgr::TypeId p1type = Types.getParameterType(t1, i);
         
         TypesMgr::TypeId p2type = getTypeDecor(ctx->expr(i));
-
-        if(not Types.equalTypes(p1type, p2type)) Errors.incompatibleParameter(ctx->expr(i), i+1, ctx);
+        
+        if(not Types.equalTypes(p1type, p2type)) {
+          if (not (Types.isFloatTy(p1type) and Types.isIntegerTy(p2type)))
+            Errors.incompatibleParameter(ctx->expr(i), i+1, ctx);
+        }
       }
     }
   }
