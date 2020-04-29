@@ -87,6 +87,8 @@ public:
   antlrcpp::Any visitNot(AslParser::NotContext *ctx);
   antlrcpp::Any visitLogical(AslParser::LogicalContext *ctx);
   antlrcpp::Any visitNegValue(AslParser::NegValueContext *ctx);
+  antlrcpp::Any visitReturnStmt(AslParser::ReturnStmtContext *ctx);
+  antlrcpp::Any visitFuncValue(AslParser::FuncValueContext *ctx);
 
 
 private:
