@@ -178,7 +178,14 @@ antlrcpp::Any CodeGenVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx)
 
   //Assignacion de una posicion de un array a un valor
   if(ctx->left_expr()->expr()){
-    code = code1 || code2 || instruction::XLOAD(addr1, offs1, addr2);
+    if(Symbols.isLocalVarClass(addr1)){
+      code = code1 || code2 || instruction::XLOAD(addr1, offs1, addr2);
+    }
+    else{
+      std::string     dire    = "%"+codeCounters.newTEMP();
+      
+      code = code1 || code2 || instruction::LOAD(dire, addr1)|| instruction::XLOAD(dire,offs1,addr2);
+    }
   }
   //Variable basica
   else{
@@ -252,7 +259,10 @@ antlrcpp::Any CodeGenVisitor::visitProcCall(AslParser::ProcCallContext *ctx) {
       std::string tempF = "%"+codeCounters.newTEMP();
       code = code || instruction::FLOAT(tempF, addr1) || instruction::PUSH(tempF);
     }
-
+    else if(Types.isArrayTy(param_types[i])){
+      std::string temp = "%"+codeCounters.newTEMP();
+      code = code || instruction::ALOAD(temp, addr1) || instruction::PUSH(temp);
+    }
     else{
       code = code ||instruction::PUSH(addr1);
     }
@@ -380,15 +390,23 @@ antlrcpp::Any CodeGenVisitor::visitLeft_expr(AslParser::Left_exprContext *ctx) {
   // std::string temp = "%"+codeCounters.newTEMP();
 
   // code = code || instruction::ALOAD(temp, addr1);
-
+  //Si es un array
   if(ctx->expr()){
-    CodeAttribs && codAts2 = visit(ctx->expr());
-    std::string         addr2 = codAts2.addr;
-    instructionList code2 = codAts2.code;
-    
-    code = code || code2;
+      CodeAttribs && codAts2 = visit(ctx->expr());
+      std::string         addr2 = codAts2.addr;
+      instructionList code2 = codAts2.code;
+    // Si el array es local/////////////// a lo mejor se puede unificar
+    if(Symbols.isLocalVarClass(addr1)){
+      
+      code = code || code2;
 
-    offset = addr2;
+    }
+    else{
+      code = code || code2;
+      // std::cout<< code.dump()<<std::endl;
+
+    }
+      offset = addr2;
   }
 
 
@@ -642,24 +660,6 @@ antlrcpp::Any CodeGenVisitor::visitFuncValue(AslParser::FuncValueContext *ctx){
   
   std::string funcionLlamada = ctx->ident()->getText();
 
-  // for (auto c : params){
-  //   std::cout<<c<< " ";
-  // }
-  // std::cout<<std::endl<<"xs " <<params.size()<<std::endl;
-  // for (auto c : ctx->expr()){
-  //   std::cout<<getTypeDecor(c)<< " ";
-  // }
-  // std::cout<<std::endl;
-  // for (auto i : ctx->expr()){
-  //   CodeAttribs     && codAt1 = visit(i);
-  //   std::string         addr1 = codAt1.addr;
-  //   instructionList &   code1 = codAt1.code;
-
-  //   std::string temp = "%"+codeCounters.newTEMP();
-
-  //   code = code || code1 || instruction::LOAD(temp, addr1);
-  //   params.push_back(temp);
-  // }
 
   for (uint i = 0;i < ctx->expr().size() ; ++i){
     CodeAttribs     && codAt1 = visit(ctx->expr(i));
@@ -676,7 +676,10 @@ antlrcpp::Any CodeGenVisitor::visitFuncValue(AslParser::FuncValueContext *ctx){
       code = code || code1 || instruction::FLOAT(temp, addr1) || instruction::PUSH(temp);
 
     }
-
+    else if(Types.isArrayTy(p1type)){
+      std::string temp = "%"+codeCounters.newTEMP();
+      code = code || instruction::ALOAD(temp, addr1) || instruction::PUSH(temp);
+    }
     else {
       code = code || code1 || instruction::PUSH(addr1);
     }
@@ -709,13 +712,22 @@ antlrcpp::Any CodeGenVisitor::visitArrayPos(AslParser::ArrayPosContext *ctx){
 
   code = codeE;
 
+  std::string         array = ctx->ident()->getText();
+
   std::string         addrI = codAtI.addr;
   std::string         addrO = codAtE.addr;
 
   std::string     temp    = "%"+codeCounters.newTEMP();
 
-  code = code || instruction::LOADX(temp, addrI, addrO);
 
+  if (Symbols.isLocalVarClass(addrI)){
+    code = code || instruction::LOADX(temp, addrI, addrO);
+  }
+  else{
+    std::string     dire    = "%"+codeCounters.newTEMP();
+
+    code = code || instruction::LOAD(dire, addrI)||instruction::LOADX(temp, dire, addrO);
+  }
   // std::cout<<code.dump()<<std::endl;
 
   CodeAttribs codAts(temp,"",code);
