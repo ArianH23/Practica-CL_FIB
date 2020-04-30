@@ -1480,6 +1480,10 @@ tree::TerminalNode* AslParser::NegExprIdentContext::SUB() {
   return getToken(AslParser::SUB, 0);
 }
 
+tree::TerminalNode* AslParser::NegExprIdentContext::PLUS() {
+  return getToken(AslParser::PLUS, 0);
+}
+
 AslParser::NegExprIdentContext::NegExprIdentContext(ExprContext *ctx) { copyFrom(ctx); }
 
 
@@ -1717,7 +1721,7 @@ AslParser::ExprContext* AslParser::expr(int precedence) {
     }
 
     case 5: {
-      _localctx = _tracker.createInstance<NegValueContext>(_localctx);
+      _localctx = _tracker.createInstance<NegExprIdentContext>(_localctx);
       _ctx = _localctx;
       previousContext = _localctx;
       setState(201);
@@ -1731,17 +1735,37 @@ AslParser::ExprContext* AslParser::expr(int precedence) {
         _errHandler->reportMatch(this);
         consume();
       }
-
       setState(202);
-      expr(0);
+      ident();
       break;
     }
 
     case 6: {
-      _localctx = _tracker.createInstance<ValueContext>(_localctx);
+      _localctx = _tracker.createInstance<NegValueContext>(_localctx);
       _ctx = _localctx;
       previousContext = _localctx;
       setState(203);
+      _la = _input->LA(1);
+      if (!(_la == AslParser::PLUS
+
+      || _la == AslParser::SUB)) {
+      _errHandler->recoverInline(this);
+      }
+      else {
+        _errHandler->reportMatch(this);
+        consume();
+      }
+
+      setState(204);
+      expr(0);
+      break;
+    }
+
+    case 7: {
+      _localctx = _tracker.createInstance<ValueContext>(_localctx);
+      _ctx = _localctx;
+      previousContext = _localctx;
+      setState(205);
       _la = _input->LA(1);
       if (!((((_la & ~ 0x3fULL) == 0) &&
         ((1ULL << _la) & ((1ULL << AslParser::INTVAL)
@@ -1757,22 +1781,10 @@ AslParser::ExprContext* AslParser::expr(int precedence) {
       break;
     }
 
-    case 7: {
+    case 8: {
       _localctx = _tracker.createInstance<ExprIdentContext>(_localctx);
       _ctx = _localctx;
       previousContext = _localctx;
-      setState(204);
-      ident();
-      break;
-    }
-
-    case 8: {
-      _localctx = _tracker.createInstance<NegExprIdentContext>(_localctx);
-      _ctx = _localctx;
-      previousContext = _localctx;
-
-      setState(205);
-      match(AslParser::SUB);
       setState(206);
       ident();
       break;
@@ -1797,7 +1809,7 @@ AslParser::ExprContext* AslParser::expr(int precedence) {
           pushNewRecursionContext(newContext, startState, RuleExpr);
           setState(209);
 
-          if (!(precpred(_ctx, 7))) throw FailedPredicateException(this, "precpred(_ctx, 7)");
+          if (!(precpred(_ctx, 6))) throw FailedPredicateException(this, "precpred(_ctx, 6)");
           setState(210);
           dynamic_cast<ArithmeticContext *>(_localctx)->op = _input->LT(1);
           _la = _input->LA(1);
@@ -1812,7 +1824,7 @@ AslParser::ExprContext* AslParser::expr(int precedence) {
             consume();
           }
           setState(211);
-          expr(8);
+          expr(7);
           break;
         }
 
@@ -1822,7 +1834,7 @@ AslParser::ExprContext* AslParser::expr(int precedence) {
           pushNewRecursionContext(newContext, startState, RuleExpr);
           setState(212);
 
-          if (!(precpred(_ctx, 6))) throw FailedPredicateException(this, "precpred(_ctx, 6)");
+          if (!(precpred(_ctx, 5))) throw FailedPredicateException(this, "precpred(_ctx, 5)");
           setState(213);
           dynamic_cast<ArithmeticContext *>(_localctx)->op = _input->LT(1);
           _la = _input->LA(1);
@@ -1836,7 +1848,7 @@ AslParser::ExprContext* AslParser::expr(int precedence) {
             consume();
           }
           setState(214);
-          expr(7);
+          expr(6);
           break;
         }
 
@@ -1846,7 +1858,7 @@ AslParser::ExprContext* AslParser::expr(int precedence) {
           pushNewRecursionContext(newContext, startState, RuleExpr);
           setState(215);
 
-          if (!(precpred(_ctx, 5))) throw FailedPredicateException(this, "precpred(_ctx, 5)");
+          if (!(precpred(_ctx, 4))) throw FailedPredicateException(this, "precpred(_ctx, 4)");
           setState(216);
           dynamic_cast<RelationalContext *>(_localctx)->op = _input->LT(1);
           _la = _input->LA(1);
@@ -1864,7 +1876,7 @@ AslParser::ExprContext* AslParser::expr(int precedence) {
             consume();
           }
           setState(217);
-          expr(6);
+          expr(5);
           break;
         }
 
@@ -1874,7 +1886,7 @@ AslParser::ExprContext* AslParser::expr(int precedence) {
           pushNewRecursionContext(newContext, startState, RuleExpr);
           setState(218);
 
-          if (!(precpred(_ctx, 4))) throw FailedPredicateException(this, "precpred(_ctx, 4)");
+          if (!(precpred(_ctx, 3))) throw FailedPredicateException(this, "precpred(_ctx, 3)");
           setState(219);
           dynamic_cast<LogicalContext *>(_localctx)->op = _input->LT(1);
           _la = _input->LA(1);
@@ -1888,7 +1900,7 @@ AslParser::ExprContext* AslParser::expr(int precedence) {
             consume();
           }
           setState(220);
-          expr(5);
+          expr(4);
           break;
         }
 
@@ -1964,10 +1976,10 @@ bool AslParser::sempred(RuleContext *context, size_t ruleIndex, size_t predicate
 
 bool AslParser::exprSempred(ExprContext *_localctx, size_t predicateIndex) {
   switch (predicateIndex) {
-    case 0: return precpred(_ctx, 7);
-    case 1: return precpred(_ctx, 6);
-    case 2: return precpred(_ctx, 5);
-    case 3: return precpred(_ctx, 4);
+    case 0: return precpred(_ctx, 6);
+    case 1: return precpred(_ctx, 5);
+    case 2: return precpred(_ctx, 4);
+    case 3: return precpred(_ctx, 3);
 
   default:
     break;
@@ -2163,19 +2175,19 @@ AslParser::Initializer::Initializer() {
     0x3, 0x2, 0x2, 0x2, 0xc5, 0xc6, 0x3, 0x2, 0x2, 0x2, 0xc6, 0xc7, 0x3, 
     0x2, 0x2, 0x2, 0xc7, 0xc8, 0x7, 0x13, 0x2, 0x2, 0xc8, 0xd2, 0x3, 0x2, 
     0x2, 0x2, 0xc9, 0xca, 0x7, 0xb, 0x2, 0x2, 0xca, 0xd2, 0x5, 0x1a, 0xe, 
-    0xb, 0xcb, 0xcc, 0x9, 0x3, 0x2, 0x2, 0xcc, 0xd2, 0x5, 0x1a, 0xe, 0x2, 
-    0xcd, 0xd2, 0x9, 0x4, 0x2, 0x2, 0xce, 0xd2, 0x5, 0x1c, 0xf, 0x2, 0xcf, 
-    0xd0, 0x7, 0x11, 0x2, 0x2, 0xd0, 0xd2, 0x5, 0x1c, 0xf, 0x2, 0xd1, 0xb1, 
+    0xb, 0xcb, 0xcc, 0x9, 0x3, 0x2, 0x2, 0xcc, 0xd2, 0x5, 0x1c, 0xf, 0x2, 
+    0xcd, 0xce, 0x9, 0x3, 0x2, 0x2, 0xce, 0xd2, 0x5, 0x1a, 0xe, 0x2, 0xcf, 
+    0xd2, 0x9, 0x4, 0x2, 0x2, 0xd0, 0xd2, 0x5, 0x1c, 0xf, 0x2, 0xd1, 0xb1, 
     0x3, 0x2, 0x2, 0x2, 0xd1, 0xb6, 0x3, 0x2, 0x2, 0x2, 0xd1, 0xbb, 0x3, 
     0x2, 0x2, 0x2, 0xd1, 0xc9, 0x3, 0x2, 0x2, 0x2, 0xd1, 0xcb, 0x3, 0x2, 
-    0x2, 0x2, 0xd1, 0xcd, 0x3, 0x2, 0x2, 0x2, 0xd1, 0xce, 0x3, 0x2, 0x2, 
-    0x2, 0xd1, 0xcf, 0x3, 0x2, 0x2, 0x2, 0xd2, 0xe1, 0x3, 0x2, 0x2, 0x2, 
-    0xd3, 0xd4, 0xc, 0x9, 0x2, 0x2, 0xd4, 0xd5, 0x9, 0x5, 0x2, 0x2, 0xd5, 
-    0xe0, 0x5, 0x1a, 0xe, 0xa, 0xd6, 0xd7, 0xc, 0x8, 0x2, 0x2, 0xd7, 0xd8, 
-    0x9, 0x3, 0x2, 0x2, 0xd8, 0xe0, 0x5, 0x1a, 0xe, 0x9, 0xd9, 0xda, 0xc, 
-    0x7, 0x2, 0x2, 0xda, 0xdb, 0x9, 0x6, 0x2, 0x2, 0xdb, 0xe0, 0x5, 0x1a, 
-    0xe, 0x8, 0xdc, 0xdd, 0xc, 0x6, 0x2, 0x2, 0xdd, 0xde, 0x9, 0x7, 0x2, 
-    0x2, 0xde, 0xe0, 0x5, 0x1a, 0xe, 0x7, 0xdf, 0xd3, 0x3, 0x2, 0x2, 0x2, 
+    0x2, 0x2, 0xd1, 0xcd, 0x3, 0x2, 0x2, 0x2, 0xd1, 0xcf, 0x3, 0x2, 0x2, 
+    0x2, 0xd1, 0xd0, 0x3, 0x2, 0x2, 0x2, 0xd2, 0xe1, 0x3, 0x2, 0x2, 0x2, 
+    0xd3, 0xd4, 0xc, 0x8, 0x2, 0x2, 0xd4, 0xd5, 0x9, 0x5, 0x2, 0x2, 0xd5, 
+    0xe0, 0x5, 0x1a, 0xe, 0x9, 0xd6, 0xd7, 0xc, 0x7, 0x2, 0x2, 0xd7, 0xd8, 
+    0x9, 0x3, 0x2, 0x2, 0xd8, 0xe0, 0x5, 0x1a, 0xe, 0x8, 0xd9, 0xda, 0xc, 
+    0x6, 0x2, 0x2, 0xda, 0xdb, 0x9, 0x6, 0x2, 0x2, 0xdb, 0xe0, 0x5, 0x1a, 
+    0xe, 0x7, 0xdc, 0xdd, 0xc, 0x5, 0x2, 0x2, 0xdd, 0xde, 0x9, 0x7, 0x2, 
+    0x2, 0xde, 0xe0, 0x5, 0x1a, 0xe, 0x6, 0xdf, 0xd3, 0x3, 0x2, 0x2, 0x2, 
     0xdf, 0xd6, 0x3, 0x2, 0x2, 0x2, 0xdf, 0xd9, 0x3, 0x2, 0x2, 0x2, 0xdf, 
     0xdc, 0x3, 0x2, 0x2, 0x2, 0xe0, 0xe3, 0x3, 0x2, 0x2, 0x2, 0xe1, 0xdf, 
     0x3, 0x2, 0x2, 0x2, 0xe1, 0xe2, 0x3, 0x2, 0x2, 0x2, 0xe2, 0x1b, 0x3, 

@@ -3,7 +3,9 @@ func main()
   a = 13;
   b = 4;
   c = a%b;
-  write c; write '.'; write '\n';
+  write c; 
+  write '.'; 
+  write '\n';
   c = (-a)%b;
   write c; write '.'; write '\n';
   c = a%(-b);

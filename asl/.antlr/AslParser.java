@@ -1055,6 +1055,7 @@ public class AslParser extends Parser {
 			return getRuleContext(IdentContext.class,0);
 		}
 		public TerminalNode SUB() { return getToken(AslParser.SUB, 0); }
+		public TerminalNode PLUS() { return getToken(AslParser.PLUS, 0); }
 		public NegExprIdentContext(ExprContext ctx) { copyFrom(ctx); }
 	}
 	public static class RelationalContext extends ExprContext {
@@ -1201,7 +1202,7 @@ public class AslParser extends Parser {
 				break;
 			case 5:
 				{
-				_localctx = new NegValueContext(_localctx);
+				_localctx = new NegExprIdentContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
 				setState(201);
@@ -1214,18 +1215,37 @@ public class AslParser extends Parser {
 					_errHandler.reportMatch(this);
 					consume();
 				}
-				{
 				setState(202);
-				expr(0);
-				}
+				ident();
 				}
 				break;
 			case 6:
 				{
-				_localctx = new ValueContext(_localctx);
+				_localctx = new NegValueContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
 				setState(203);
+				_la = _input.LA(1);
+				if ( !(_la==PLUS || _la==SUB) ) {
+				_errHandler.recoverInline(this);
+				}
+				else {
+					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+					_errHandler.reportMatch(this);
+					consume();
+				}
+				{
+				setState(204);
+				expr(0);
+				}
+				}
+				break;
+			case 7:
+				{
+				_localctx = new ValueContext(_localctx);
+				_ctx = _localctx;
+				_prevctx = _localctx;
+				setState(205);
 				_la = _input.LA(1);
 				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << INTVAL) | (1L << FLOATVAL) | (1L << BOOLVAL) | (1L << CHARVAL))) != 0)) ) {
 				_errHandler.recoverInline(this);
@@ -1237,24 +1257,11 @@ public class AslParser extends Parser {
 				}
 				}
 				break;
-			case 7:
+			case 8:
 				{
 				_localctx = new ExprIdentContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(204);
-				ident();
-				}
-				break;
-			case 8:
-				{
-				_localctx = new NegExprIdentContext(_localctx);
-				_ctx = _localctx;
-				_prevctx = _localctx;
-				{
-				setState(205);
-				match(SUB);
-				}
 				setState(206);
 				ident();
 				}
@@ -1277,7 +1284,7 @@ public class AslParser extends Parser {
 						_localctx = new ArithmeticContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(209);
-						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
+						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
 						setState(210);
 						((ArithmeticContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
@@ -1290,7 +1297,7 @@ public class AslParser extends Parser {
 							consume();
 						}
 						setState(211);
-						expr(8);
+						expr(7);
 						}
 						break;
 					case 2:
@@ -1298,7 +1305,7 @@ public class AslParser extends Parser {
 						_localctx = new ArithmeticContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(212);
-						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
+						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
 						setState(213);
 						((ArithmeticContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
@@ -1311,7 +1318,7 @@ public class AslParser extends Parser {
 							consume();
 						}
 						setState(214);
-						expr(7);
+						expr(6);
 						}
 						break;
 					case 3:
@@ -1319,7 +1326,7 @@ public class AslParser extends Parser {
 						_localctx = new RelationalContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(215);
-						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
+						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
 						setState(216);
 						((RelationalContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
@@ -1332,7 +1339,7 @@ public class AslParser extends Parser {
 							consume();
 						}
 						setState(217);
-						expr(6);
+						expr(5);
 						}
 						break;
 					case 4:
@@ -1340,7 +1347,7 @@ public class AslParser extends Parser {
 						_localctx = new LogicalContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(218);
-						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
+						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
 						setState(219);
 						((LogicalContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
@@ -1353,7 +1360,7 @@ public class AslParser extends Parser {
 							consume();
 						}
 						setState(220);
-						expr(5);
+						expr(4);
 						}
 						break;
 					}
@@ -1415,13 +1422,13 @@ public class AslParser extends Parser {
 	private boolean expr_sempred(ExprContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 0:
-			return precpred(_ctx, 7);
-		case 1:
 			return precpred(_ctx, 6);
-		case 2:
+		case 1:
 			return precpred(_ctx, 5);
-		case 3:
+		case 2:
 			return precpred(_ctx, 4);
+		case 3:
+			return precpred(_ctx, 3);
 		}
 		return true;
 	}
@@ -1490,14 +1497,14 @@ public class AslParser extends Parser {
 		"\3\2\2\2\u00c2\u00c0\3\2\2\2\u00c2\u00c3\3\2\2\2\u00c3\u00c6\3\2\2\2\u00c4"+
 		"\u00c2\3\2\2\2\u00c5\u00bd\3\2\2\2\u00c5\u00c6\3\2\2\2\u00c6\u00c7\3\2"+
 		"\2\2\u00c7\u00c8\7\23\2\2\u00c8\u00d2\3\2\2\2\u00c9\u00ca\7\13\2\2\u00ca"+
-		"\u00d2\5\32\16\13\u00cb\u00cc\t\3\2\2\u00cc\u00d2\5\32\16\2\u00cd\u00d2"+
-		"\t\4\2\2\u00ce\u00d2\5\34\17\2\u00cf\u00d0\7\21\2\2\u00d0\u00d2\5\34\17"+
+		"\u00d2\5\32\16\13\u00cb\u00cc\t\3\2\2\u00cc\u00d2\5\34\17\2\u00cd\u00ce"+
+		"\t\3\2\2\u00ce\u00d2\5\32\16\2\u00cf\u00d2\t\4\2\2\u00d0\u00d2\5\34\17"+
 		"\2\u00d1\u00b1\3\2\2\2\u00d1\u00b6\3\2\2\2\u00d1\u00bb\3\2\2\2\u00d1\u00c9"+
-		"\3\2\2\2\u00d1\u00cb\3\2\2\2\u00d1\u00cd\3\2\2\2\u00d1\u00ce\3\2\2\2\u00d1"+
-		"\u00cf\3\2\2\2\u00d2\u00e1\3\2\2\2\u00d3\u00d4\f\t\2\2\u00d4\u00d5\t\5"+
-		"\2\2\u00d5\u00e0\5\32\16\n\u00d6\u00d7\f\b\2\2\u00d7\u00d8\t\3\2\2\u00d8"+
-		"\u00e0\5\32\16\t\u00d9\u00da\f\7\2\2\u00da\u00db\t\6\2\2\u00db\u00e0\5"+
-		"\32\16\b\u00dc\u00dd\f\6\2\2\u00dd\u00de\t\7\2\2\u00de\u00e0\5\32\16\7"+
+		"\3\2\2\2\u00d1\u00cb\3\2\2\2\u00d1\u00cd\3\2\2\2\u00d1\u00cf\3\2\2\2\u00d1"+
+		"\u00d0\3\2\2\2\u00d2\u00e1\3\2\2\2\u00d3\u00d4\f\b\2\2\u00d4\u00d5\t\5"+
+		"\2\2\u00d5\u00e0\5\32\16\t\u00d6\u00d7\f\7\2\2\u00d7\u00d8\t\3\2\2\u00d8"+
+		"\u00e0\5\32\16\b\u00d9\u00da\f\6\2\2\u00da\u00db\t\6\2\2\u00db\u00e0\5"+
+		"\32\16\7\u00dc\u00dd\f\5\2\2\u00dd\u00de\t\7\2\2\u00de\u00e0\5\32\16\6"+
 		"\u00df\u00d3\3\2\2\2\u00df\u00d6\3\2\2\2\u00df\u00d9\3\2\2\2\u00df\u00dc"+
 		"\3\2\2\2\u00e0\u00e3\3\2\2\2\u00e1\u00df\3\2\2\2\u00e1\u00e2\3\2\2\2\u00e2"+
 		"\33\3\2\2\2\u00e3\u00e1\3\2\2\2\u00e4\u00e5\7/\2\2\u00e5\35\3\2\2\2\27"+

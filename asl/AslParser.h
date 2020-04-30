@@ -438,6 +438,7 @@ public:
 
     IdentContext *ident();
     antlr4::tree::TerminalNode *SUB();
+    antlr4::tree::TerminalNode *PLUS();
 
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
   };
