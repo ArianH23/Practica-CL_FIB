@@ -374,6 +374,7 @@ public:
     NegValueContext(ExprContext *ctx);
 
     antlr4::tree::TerminalNode *SUB();
+    antlr4::tree::TerminalNode *PLUS();
     ExprContext *expr();
 
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;

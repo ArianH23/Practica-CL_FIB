@@ -331,7 +331,7 @@ public class AslParser extends Parser {
 			setState(73);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NOT) | (1L << SUB) | (1L << LP) | (1L << INTVAL) | (1L << FLOATVAL) | (1L << BOOLVAL) | (1L << CHARVAL) | (1L << ID))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NOT) | (1L << PLUS) | (1L << SUB) | (1L << LP) | (1L << INTVAL) | (1L << FLOATVAL) | (1L << BOOLVAL) | (1L << CHARVAL) | (1L << ID))) != 0)) {
 				{
 				setState(65);
 				expr(0);
@@ -814,7 +814,7 @@ public class AslParser extends Parser {
 				setState(139);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NOT) | (1L << SUB) | (1L << LP) | (1L << INTVAL) | (1L << FLOATVAL) | (1L << BOOLVAL) | (1L << CHARVAL) | (1L << ID))) != 0)) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NOT) | (1L << PLUS) | (1L << SUB) | (1L << LP) | (1L << INTVAL) | (1L << FLOATVAL) | (1L << BOOLVAL) | (1L << CHARVAL) | (1L << ID))) != 0)) {
 					{
 					setState(131);
 					expr(0);
@@ -904,7 +904,7 @@ public class AslParser extends Parser {
 				setState(163);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NOT) | (1L << SUB) | (1L << LP) | (1L << INTVAL) | (1L << FLOATVAL) | (1L << BOOLVAL) | (1L << CHARVAL) | (1L << ID))) != 0)) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NOT) | (1L << PLUS) | (1L << SUB) | (1L << LP) | (1L << INTVAL) | (1L << FLOATVAL) | (1L << BOOLVAL) | (1L << CHARVAL) | (1L << ID))) != 0)) {
 					{
 					setState(162);
 					expr(0);
@@ -1000,6 +1000,7 @@ public class AslParser extends Parser {
 	}
 	public static class NegValueContext extends ExprContext {
 		public TerminalNode SUB() { return getToken(AslParser.SUB, 0); }
+		public TerminalNode PLUS() { return getToken(AslParser.PLUS, 0); }
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
 		}
@@ -1160,7 +1161,7 @@ public class AslParser extends Parser {
 				setState(195);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NOT) | (1L << SUB) | (1L << LP) | (1L << INTVAL) | (1L << FLOATVAL) | (1L << BOOLVAL) | (1L << CHARVAL) | (1L << ID))) != 0)) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << NOT) | (1L << PLUS) | (1L << SUB) | (1L << LP) | (1L << INTVAL) | (1L << FLOATVAL) | (1L << BOOLVAL) | (1L << CHARVAL) | (1L << ID))) != 0)) {
 					{
 					setState(187);
 					expr(0);
@@ -1203,9 +1204,15 @@ public class AslParser extends Parser {
 				_localctx = new NegValueContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				{
 				setState(201);
-				match(SUB);
+				_la = _input.LA(1);
+				if ( !(_la==PLUS || _la==SUB) ) {
+				_errHandler.recoverInline(this);
+				}
+				else {
+					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+					_errHandler.reportMatch(this);
+					consume();
 				}
 				{
 				setState(202);
@@ -1437,7 +1444,7 @@ public class AslParser extends Parser {
 		"\3\16\3\16\3\16\3\16\3\16\3\16\3\16\3\16\3\16\5\16\u00d2\n\16\3\16\3\16"+
 		"\3\16\3\16\3\16\3\16\3\16\3\16\3\16\3\16\3\16\3\16\7\16\u00e0\n\16\f\16"+
 		"\16\16\u00e3\13\16\3\17\3\17\3\17\2\3\32\20\2\4\6\b\n\f\16\20\22\24\26"+
-		"\30\32\34\2\b\4\2\26\30\36\36\3\2+.\3\2\31\33\3\2\20\21\4\2\t\n\f\17\3"+
+		"\30\32\34\2\b\4\2\26\30\36\36\3\2\20\21\3\2+.\3\2\31\33\4\2\t\n\f\17\3"+
 		"\2\7\b\2\u00fb\2\37\3\2\2\2\4%\3\2\2\2\6?\3\2\2\2\bA\3\2\2\2\nR\3\2\2"+
 		"\2\fU\3\2\2\2\16a\3\2\2\2\20h\3\2\2\2\22l\3\2\2\2\24q\3\2\2\2\26\u00a8"+
 		"\3\2\2\2\30\u00aa\3\2\2\2\32\u00d1\3\2\2\2\34\u00e4\3\2\2\2\36 \5\4\3"+
@@ -1483,12 +1490,12 @@ public class AslParser extends Parser {
 		"\3\2\2\2\u00c2\u00c0\3\2\2\2\u00c2\u00c3\3\2\2\2\u00c3\u00c6\3\2\2\2\u00c4"+
 		"\u00c2\3\2\2\2\u00c5\u00bd\3\2\2\2\u00c5\u00c6\3\2\2\2\u00c6\u00c7\3\2"+
 		"\2\2\u00c7\u00c8\7\23\2\2\u00c8\u00d2\3\2\2\2\u00c9\u00ca\7\13\2\2\u00ca"+
-		"\u00d2\5\32\16\13\u00cb\u00cc\7\21\2\2\u00cc\u00d2\5\32\16\2\u00cd\u00d2"+
-		"\t\3\2\2\u00ce\u00d2\5\34\17\2\u00cf\u00d0\7\21\2\2\u00d0\u00d2\5\34\17"+
+		"\u00d2\5\32\16\13\u00cb\u00cc\t\3\2\2\u00cc\u00d2\5\32\16\2\u00cd\u00d2"+
+		"\t\4\2\2\u00ce\u00d2\5\34\17\2\u00cf\u00d0\7\21\2\2\u00d0\u00d2\5\34\17"+
 		"\2\u00d1\u00b1\3\2\2\2\u00d1\u00b6\3\2\2\2\u00d1\u00bb\3\2\2\2\u00d1\u00c9"+
 		"\3\2\2\2\u00d1\u00cb\3\2\2\2\u00d1\u00cd\3\2\2\2\u00d1\u00ce\3\2\2\2\u00d1"+
-		"\u00cf\3\2\2\2\u00d2\u00e1\3\2\2\2\u00d3\u00d4\f\t\2\2\u00d4\u00d5\t\4"+
-		"\2\2\u00d5\u00e0\5\32\16\n\u00d6\u00d7\f\b\2\2\u00d7\u00d8\t\5\2\2\u00d8"+
+		"\u00cf\3\2\2\2\u00d2\u00e1\3\2\2\2\u00d3\u00d4\f\t\2\2\u00d4\u00d5\t\5"+
+		"\2\2\u00d5\u00e0\5\32\16\n\u00d6\u00d7\f\b\2\2\u00d7\u00d8\t\3\2\2\u00d8"+
 		"\u00e0\5\32\16\t\u00d9\u00da\f\7\2\2\u00da\u00db\t\6\2\2\u00db\u00e0\5"+
 		"\32\16\b\u00dc\u00dd\f\6\2\2\u00dd\u00de\t\7\2\2\u00de\u00e0\5\32\16\7"+
 		"\u00df\u00d3\3\2\2\2\u00df\u00d6\3\2\2\2\u00df\u00d9\3\2\2\2\u00df\u00dc"+

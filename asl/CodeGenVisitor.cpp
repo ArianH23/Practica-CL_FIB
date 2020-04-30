@@ -629,7 +629,7 @@ antlrcpp::Any CodeGenVisitor::visitNegValue(AslParser::NegValueContext *ctx){
   TypesMgr::TypeId t  = getTypeDecor(ctx);
   
   if(Types.isIntegerTy(t)){
-    instructionList && code = code1 || instruction::NOT(temp, addr1); 
+    instructionList && code = code1 || instruction::NEG(temp, addr1); 
     CodeAttribs codAts(temp, "", code);
  
     DEBUG_EXIT();
@@ -642,7 +642,10 @@ antlrcpp::Any CodeGenVisitor::visitNegValue(AslParser::NegValueContext *ctx){
     DEBUG_EXIT();
     return codAts;
   }
-
+  CodeAttribs codAts(addr1, "", code1);
+ 
+  DEBUG_EXIT();
+  return codAts;
 }
 antlrcpp::Any CodeGenVisitor::visitReturnStmt(AslParser::ReturnStmtContext *ctx){
   DEBUG_ENTER();
