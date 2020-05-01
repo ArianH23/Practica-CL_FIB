@@ -162,6 +162,7 @@ antlrcpp::Any CodeGenVisitor::visitStatements(AslParser::StatementsContext *ctx)
 
 antlrcpp::Any CodeGenVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx) {
   DEBUG_ENTER();
+  // std::cout<<"xd"<<std::endl;
   instructionList code;
   CodeAttribs     && codAtsE1 = visit(ctx->left_expr());
   std::string           addr1 = codAtsE1.addr;
@@ -176,15 +177,72 @@ antlrcpp::Any CodeGenVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx)
   instructionList &     code2 = codAtsE2.code;
   TypesMgr::TypeId tid2 = getTypeDecor(ctx->expr());
 
-  //Assignacion de una posicion de un array a un valor
-  if(ctx->left_expr()->expr()){
+  //Assignar arrays entre ellos
+  
+  if(Types.isArrayTy(tid1) and Types.isArrayTy(tid2)){
+    code = code1 || code2;
+      std::string     dire1;
+      std::string     dire2;
+
+    //Comprobar cual de los dos arrays es pasado por referencia o local
     if(Symbols.isLocalVarClass(addr1)){
-      code = code1 || code2 || instruction::XLOAD(addr1, offs1, addr2);
+      dire1 = addr1;
+    }
+    else{
+      dire1    = "%"+codeCounters.newTEMP();
+      code = code || instruction::LOAD(dire1, addr1);
+    }
+
+    if(Symbols.isLocalVarClass(addr2)){
+      dire2 = addr2;
+    }
+    else{
+      dire2    = "%"+codeCounters.newTEMP();
+      code = code || instruction::LOAD(dire2, addr2);
+    }
+    
+    //Inicializar bucle 
+    std::string inicio = "while"+codeCounters.newLabelWHILE();
+    std::string final = "end"+inicio;
+
+    std::string     contador    = "%"+codeCounters.newTEMP();
+    std::string     longitud    = "%"+codeCounters.newTEMP();
+    std::string     resultado    = "%"+codeCounters.newTEMP();
+    std::string     incrementador    = "%"+codeCounters.newTEMP();
+    std::string     igualdad    = "%"+codeCounters.newTEMP();
+
+
+    uint arrSize = Types.getArraySize(tid1);
+    code = code || instruction::ILOAD(contador, "0");
+    code = code || instruction::ILOAD(longitud, std::to_string(arrSize));
+    code = code || instruction::ILOAD(incrementador, "1");
+
+    instructionList     codigoBucle;
+
+    codigoBucle = instruction::LOADX(resultado, dire2, contador);
+
+    //Concatenacion del codigo del bucle
+    codigoBucle = codigoBucle || instruction::XLOAD(dire1, contador, resultado);
+
+    codigoBucle = codigoBucle || instruction::ADD(contador, contador, incrementador);
+
+    codigoBucle = codigoBucle || instruction::UJUMP(inicio);
+
+    //Codigo resultante
+    code = code || instruction::LABEL(inicio) 
+                || instruction::LE(igualdad, contador, longitud) || instruction::FJUMP(igualdad, final)
+                || codigoBucle 
+                || instruction::LABEL(final);
+  }
+  //Assignacion de una posicion de un array a un valor
+  else if(ctx->left_expr()->expr()){
+    if(Symbols.isLocalVarClass(addr1)){
+      code = code1 || code2|| instruction::XLOAD(addr1, offs1, addr2);
     }
     else{
       std::string     dire    = "%"+codeCounters.newTEMP();
       
-      code = code1 || code2 || instruction::LOAD(dire, addr1)|| instruction::XLOAD(dire,offs1,addr2);
+      code = code1 || code2|| instruction::LOAD(dire, addr1)|| instruction::XLOAD(dire,offs1,addr2);
     }
   }
   //Variable basica
@@ -192,10 +250,10 @@ antlrcpp::Any CodeGenVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx)
     if (Types.isFloatTy(tid1) and Types.isIntegerTy(tid2)){
       std::string tempF = "%"+codeCounters.newTEMP();
 
-      code = code1 || code2 || instruction::FLOAT(tempF, addr2) || instruction::LOAD(addr1, tempF);
+      code = code1 || code2||instruction::FLOAT(tempF, addr2) || instruction::LOAD(addr1, tempF);
     }
     else{
-      code = code1 || code2 || instruction::LOAD(addr1, addr2);
+      code = code1 || code2||instruction::LOAD(addr1, addr2);
 
     }
   }
