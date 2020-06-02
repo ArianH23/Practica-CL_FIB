@@ -104,7 +104,7 @@ expr    : LP expr RP                                # parenthesis
         | ident LC expr RC                          # arrayPos
         | ident '(' (expr (',' expr)* )? ')'        # funcValue
         | op=NOT expr                               # not
-        | (SUB|PLUS) ident                               # negExprIdent
+        | (SUB|PLUS) ident                          # negExprIdent
         | (SUB|PLUS) (expr)                         # negValue
         | expr op=(MUL|DIV|MOD) expr                # arithmetic
         | expr op=(PLUS|SUB) expr                   # arithmetic
