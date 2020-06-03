@@ -232,9 +232,11 @@ antlrcpp::Any TypeCheckVisitor::visitProcCall(AslParser::ProcCallContext *ctx) {
   TypesMgr::TypeId t1 = getTypeDecor(ctx->ident());
 
   if (not Types.isFunctionTy(t1) and not Types.isErrorTy(t1)) {
+
     Errors.isNotCallable(ctx->ident());
   }
 
+  
   else if(not Types.isErrorTy(t1)){
 
     for(uint i = 0; i < ctx->expr().size(); ++i){
@@ -249,10 +251,11 @@ antlrcpp::Any TypeCheckVisitor::visitProcCall(AslParser::ProcCallContext *ctx) {
         TypesMgr::TypeId p1type = Types.getParameterType(t1, i);
         
         TypesMgr::TypeId p2type = getTypeDecor(ctx->expr(i));
-        
-        if(not Types.equalTypes(p1type, p2type)) {
-          if (not (Types.isFloatTy(p1type) and Types.isIntegerTy(p2type)))
-            Errors.incompatibleParameter(ctx->expr(i), i+1, ctx);
+
+        if(not Types.equalTypes(p1type,p2type)){
+          if(not(Types.isFloatTy(p1type)and Types.isIntegerTy(p2type))){
+            Errors.incompatibleParameter(ctx->expr(i),i+1,ctx);
+          }
         }
       }
     }
@@ -340,24 +343,19 @@ antlrcpp::Any TypeCheckVisitor::visitArithmetic(AslParser::ArithmeticContext *ct
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
   TypesMgr::TypeId t = Types.createIntegerTy();
 
-  if (((not Types.isErrorTy(t1)) and (not Types.isNumericTy(t1))) or    //Si no son numeros
-      ((not Types.isErrorTy(t2)) and (not Types.isNumericTy(t2))))
-    Errors.incompatibleOperator(ctx->op);
-
-  else if(ctx->MOD() and not Types.isErrorTy(t1) and not Types.isErrorTy(t2)){ // Si hay un MOD y ambos deben ser INTS
-    if(not Types.isIntegerTy(t1) or not Types.isIntegerTy(t2)){
+  //Caso de MOD
+  if (ctx->MOD()) {
+    if ((not Types.isErrorTy(t1) and not Types.isIntegerTy(t1)) or 
+        (not Types.isErrorTy(t2) and not Types.isIntegerTy(t2)))
       Errors.incompatibleOperator(ctx->op);
-    }
-    else{
-      t = Types.createIntegerTy();
-    }
   }
 
-  if(Types.isFloatTy(t1) or Types.isFloatTy(t2)){
-    t = Types.createFloatTy();
-  }
-  else{
-    t = Types.createIntegerTy();
+  // MUL, DIV, ADD, SUB
+  else {
+    if (((not Types.isErrorTy(t1)) and (not Types.isNumericTy(t1))) or
+        ((not Types.isErrorTy(t2)) and (not Types.isNumericTy(t2))))
+      Errors.incompatibleOperator(ctx->op);
+    if (Types.isFloatTy(t1) or Types.isFloatTy(t2)) t = Types.createFloatTy();
   }
   
   putTypeDecor(ctx, t);

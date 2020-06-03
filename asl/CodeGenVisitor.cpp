@@ -492,16 +492,8 @@ antlrcpp::Any CodeGenVisitor::visitLeft_expr(AslParser::Left_exprContext *ctx) {
       std::string         addr2 = codAts2.addr;
       instructionList code2 = codAts2.code;
     // Si el array es local/////////////// a lo mejor se puede unificar
-    if(Symbols.isLocalVarClass(addr1)){
-      
-      code = code || code2;
 
-    }
-    else{
       code = code || code2;
-      // std::cout<< code.dump()<<std::endl;
-
-    }
       offset = addr2;
   }
 
