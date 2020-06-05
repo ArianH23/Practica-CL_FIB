@@ -388,14 +388,24 @@ antlrcpp::Any CodeGenVisitor::visitReadStmt(AslParser::ReadStmtContext *ctx) {
   // TypesMgr::TypeId tid1 = getTypeDecor(ctx->left_expr());
 
   if(ctx->left_expr()->expr()){
+    std::string          dire1 = "%"+codeCounters.newTEMP();
+
+    if(Symbols.isLocalVarClass(addr1)){
+      dire1 = addr1;
+    }
+    else{
+      dire1    = "%"+codeCounters.newTEMP();
+      code = code || instruction::LOAD(dire1, addr1);
+    }
+
     if(Types.isIntegerTy(t1) or Types.isBooleanTy(t1))
-    code = code || code1 || instruction::READI(readTemporal) || instruction::XLOAD(addr1, offs1, readTemporal);
+    code = code || code1 || instruction::READI(readTemporal) || instruction::XLOAD(dire1, offs1, readTemporal);
 
     else if(Types.isFloatTy(t1))
-    code = code || code1 || instruction::READF(readTemporal) || instruction::XLOAD(addr1, offs1, readTemporal);
+    code = code || code1 || instruction::READF(readTemporal) || instruction::XLOAD(dire1, offs1, readTemporal);
 
     else if (Types.isCharacterTy(t1)) 
-    code = code || code1 || instruction::READC(readTemporal) || instruction::XLOAD(addr1, offs1, readTemporal);
+    code = code || code1 || instruction::READC(readTemporal) || instruction::XLOAD(dire1, offs1, readTemporal);
 
   }
   else{
