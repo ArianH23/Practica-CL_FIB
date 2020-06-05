@@ -343,10 +343,11 @@ antlrcpp::Any TypeCheckVisitor::visitArithmetic(AslParser::ArithmeticContext *ct
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
   TypesMgr::TypeId t = Types.createIntegerTy();
 
-  //Caso de MOD
+  //Operacion MOD
   if (ctx->MOD()) {
     if ((not Types.isErrorTy(t1) and not Types.isIntegerTy(t1)) or 
         (not Types.isErrorTy(t2) and not Types.isIntegerTy(t2)))
+
       Errors.incompatibleOperator(ctx->op);
   }
 
@@ -355,7 +356,9 @@ antlrcpp::Any TypeCheckVisitor::visitArithmetic(AslParser::ArithmeticContext *ct
     if (((not Types.isErrorTy(t1)) and (not Types.isNumericTy(t1))) or
         ((not Types.isErrorTy(t2)) and (not Types.isNumericTy(t2))))
       Errors.incompatibleOperator(ctx->op);
-    if (Types.isFloatTy(t1) or Types.isFloatTy(t2)) t = Types.createFloatTy();
+
+    if (Types.isFloatTy(t1) or Types.isFloatTy(t2)) 
+    t = Types.createFloatTy();
   }
   
   putTypeDecor(ctx, t);

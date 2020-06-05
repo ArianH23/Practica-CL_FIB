@@ -40,7 +40,7 @@
 #include <cstddef>    // std::size_t
 
 // uncomment the following line to enable debugging messages with DEBUG*
-// #define DEBUG_BUILD
+#define DEBUG_BUILD
 #include "../common/debug.h"
 
 // using namespace std;
@@ -230,7 +230,7 @@ antlrcpp::Any CodeGenVisitor::visitAssignStmt(AslParser::AssignStmtContext *ctx)
 
     //Codigo resultante
     code = code || instruction::LABEL(inicio) 
-                || instruction::LE(igualdad, contador, longitud) || instruction::FJUMP(igualdad, final)
+                || instruction::LT(igualdad, contador, longitud) || instruction::FJUMP(igualdad, final)
                 || codigoBucle 
                 || instruction::LABEL(final);
   }
@@ -694,9 +694,9 @@ antlrcpp::Any CodeGenVisitor::visitLogical(AslParser::LogicalContext *ctx){
   std::string         addr2 = codAt2.addr;
   instructionList &   code2 = codAt2.code;
   instructionList &&   code = code1 || code2;
-  // TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
-  // TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
-  // TypesMgr::TypeId  t = getTypeDecor(ctx);
+  
+
+  
   std::string temp = "%"+codeCounters.newTEMP();
   if (ctx->AND()){
     code = code || instruction::AND(temp, addr1, addr2);
@@ -804,11 +804,11 @@ antlrcpp::Any CodeGenVisitor::visitFuncValue(AslParser::FuncValueContext *ctx){
     instructionList &   code1 = codAt1.code;
 
     TypesMgr::TypeId p1type = Types.getParameterType(t1, i);
-    // std::cout<<i<<" " <<p1type<<" "<< ctx->expr().size()<<std::endl;
+
     if (Types.isFloatTy(p1type) and Types.isIntegerTy(getTypeDecor(ctx->expr(i)))) {
-      // std::cout<<"he casteado el param " <<i << std::endl;
+
       std::string temp = "%"+codeCounters.newTEMP();
-      // code = code || instruction::FLOAT(temp,getAddrDecor(i));
+
 
       code = code || code1 || instruction::FLOAT(temp, addr1) || instruction::PUSH(temp);
 
@@ -848,8 +848,6 @@ antlrcpp::Any CodeGenVisitor::visitArrayPos(AslParser::ArrayPosContext *ctx){
   instructionList &   codeE = codAtE.code;
 
   code = codeE;
-
-  std::string         array = ctx->ident()->getText();
 
   std::string         addrI = codAtI.addr;
   std::string         addrO = codAtE.addr;
