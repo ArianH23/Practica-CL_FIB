@@ -1,33 +1,3 @@
-//////////////////////////////////////////////////////////////////////
-//
-//    SymbolsVisitor - Walk the parser tree to register symbols
-//                     for the Asl programming language
-//
-//    Copyright (C) 2019  Universitat Politecnica de Catalunya
-//
-//    This library is free software; you can redistribute it and/or
-//    modify it under the terms of the GNU General Public License
-//    as published by the Free Software Foundation; either version 3
-//    of the License, or (at your option) any later version.
-//
-//    This library is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//    Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public
-//    License along with this library; if not, write to the Free Software
-//    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-//
-//    contact: José Miguel Rivero (rivero@cs.upc.edu)
-//             Computer Science Department
-//             Universitat Politecnica de Catalunya
-//             despatx Omega.110 - Campus Nord UPC
-//             08034 Barcelona.  SPAIN
-//
-//////////////////////////////////////////////////////////////////////
-
-
 #pragma once
 
 #include "antlr4-runtime.h"
@@ -68,20 +38,6 @@ public:
   antlrcpp::Any visitType(AslParser::TypeContext *ctx);
   antlrcpp::Any visitSimple_type(AslParser::Simple_typeContext *ctx);
   antlrcpp::Any visitArray_type(AslParser::Array_typeContext *ctx);
-
-  // antlrcpp::Any visitStatements(AslParser::StatementsContext *ctx);
-  // antlrcpp::Any visitAssignStmt(AslParser::AssignStmtContext *ctx);
-  // antlrcpp::Any visitIfStmt(AslParser::IfStmtContext *ctx);
-  // antlrcpp::Any visitProcCall(AslParser::ProcCallContext *ctx);
-  // antlrcpp::Any visitReadStmt(AslParser::ReadStmtContext *ctx);
-  // antlrcpp::Any visitWriteExpr(AslParser::WriteExprContext *ctx);
-  // antlrcpp::Any visitWriteString(AslParser::WriteStringContext *ctx);
-  // antlrcpp::Any visitLeft_expr(AslParser::Left_exprContext *ctx);
-  // antlrcpp::Any visitExprIdent(AslParser::ExprIdentContext *ctx);
-  // antlrcpp::Any visitArithmetic(AslParser::ArithmeticContext *ctx);
-  // antlrcpp::Any visitRelational(AslParser::RelationalContext *ctx);
-  // antlrcpp::Any visitValue(AslParser::ValueContext *ctx);
-  // antlrcpp::Any visitIdent(AslParser::IdentContext *ctx);
 
 private:
 

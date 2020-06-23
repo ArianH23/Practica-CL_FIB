@@ -1,32 +1,3 @@
-//////////////////////////////////////////////////////////////////////
-//
-//    CodeGenVisitor - Walk the parser tree to do
-//                     the generation of code
-//
-//    Copyright (C) 2019  Universitat Politecnica de Catalunya
-//
-//    This library is free software; you can redistribute it and/or
-//    modify it under the terms of the GNU General Public License
-//    as published by the Free Software Foundation; either version 3
-//    of the License, or (at your option) any later version.
-//
-//    This library is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//    Affero General Public License for more details.
-//
-//    You should have received a copy of the GNU Affero General Public
-//    License along with this library; if not, write to the Free Software
-//    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-//
-//    contact: José Miguel Rivero (rivero@cs.upc.edu)
-//             Computer Science Department
-//             Universitat Politecnica de Catalunya
-//             despatx Omega.110 - Campus Nord UPC
-//             08034 Barcelona.  SPAIN
-//
-//////////////////////////////////////////////////////////////////////
-
 #include "CodeGenVisitor.h"
 
 #include "antlr4-runtime.h"
@@ -78,10 +49,7 @@ antlrcpp::Any CodeGenVisitor::visitFunction(AslParser::FunctionContext *ctx) {
 
   subroutine subr(ctx->ID()->getText());
 
-  // std::cout<<ctx->function_params()->getText()<<std::endl;
-  // ////////////////////
 
-  // std::vector<var> && fvars = visit(ctx->function_params());
   //Si devuelve algo, entonces reservamos en la pila el resultado.
   if(ctx->type()){
     subr.add_param("_result");
@@ -138,11 +106,10 @@ antlrcpp::Any CodeGenVisitor::visitVariable_decl(AslParser::Variable_declContext
 antlrcpp::Any CodeGenVisitor::visitFunction_params(AslParser::Function_paramsContext *ctx) {
   DEBUG_ENTER();
   std::vector<std::string> lvars;
-  // subroutine subRef(code::get_last_subroutine());
 
     for(uint i = 0; i < ctx->ID().size();++i){
       std::string texto = ctx->ID()[i]->getText();
-      // std::size_t   size = Types.getSizeOfType(ctx->type()[i]);
+
       lvars.push_back(texto);
     }
   DEBUG_EXIT();
@@ -329,7 +296,7 @@ antlrcpp::Any CodeGenVisitor::visitWhileStmt(AslParser::WhileStmtContext *ctx) {
 antlrcpp::Any CodeGenVisitor::visitProcCall(AslParser::ProcCallContext *ctx) {
   DEBUG_ENTER();
   instructionList code;
-  // std::string name = ctx->ident()->ID()->getSymbol()->getText();
+
   std::string name = ctx->ident()->getText();
   bool popalfinal = false;
   if(not Types.isVoidTy(getTypeDecor(ctx->ident()))){
@@ -338,7 +305,7 @@ antlrcpp::Any CodeGenVisitor::visitProcCall(AslParser::ProcCallContext *ctx) {
   }
 
   auto param_types = Types.getFuncParamsTypes(getTypeDecor(ctx->ident()));
-  // std::cout<<(ctx->expr()).size()<<std::endl;
+
 
   for (uint i = 0; i< (ctx->expr()).size(); ++i){
     CodeAttribs     && codAt1 = visit(ctx->expr(i));
@@ -385,7 +352,7 @@ antlrcpp::Any CodeGenVisitor::visitReadStmt(AslParser::ReadStmtContext *ctx) {
 
   std::string          readTemporal = "%"+codeCounters.newTEMP();
 
-  // TypesMgr::TypeId tid1 = getTypeDecor(ctx->left_expr());
+
 
   if(ctx->left_expr()->expr()){
     std::string          dire1 = "%"+codeCounters.newTEMP();
@@ -427,15 +394,12 @@ antlrcpp::Any CodeGenVisitor::visitWriteExpr(AslParser::WriteExprContext *ctx) {
   DEBUG_ENTER();
   CodeAttribs     && codAt1 = visit(ctx->expr());
   std::string         addr1 = codAt1.addr;
-  // std::string         offs1 = codAt1.offs;
-  instructionList &   code1 = codAt1.code;
-  // instructionList &    code = code1;
-  // TypesMgr::TypeId tid1 = getTypeDecor(ctx->expr());
 
-  // std::cout<<ctx->expr()->getText()<<std::endl;
+  instructionList &   code1 = codAt1.code;
+  
   TypesMgr::TypeId t  = getTypeDecor(ctx->expr());
 
-  // std::cout<<t<<std::endl;
+
   instructionList   code;
   if(Types.isIntegerTy(t) || Types.isBooleanTy(t))
     code = code1 || instruction::WRITEI(addr1);
@@ -493,9 +457,7 @@ antlrcpp::Any CodeGenVisitor::visitLeft_expr(AslParser::Left_exprContext *ctx) {
   instructionList code = codAts1.code;
 
   std::string offset = "%"+codeCounters.newTEMP();
-  // std::string temp = "%"+codeCounters.newTEMP();
 
-  // code = code || instruction::ALOAD(temp, addr1);
   //Si es un array
   if(ctx->expr()){
       CodeAttribs && codAts2 = visit(ctx->expr());
@@ -522,9 +484,7 @@ antlrcpp::Any CodeGenVisitor::visitArithmetic(AslParser::ArithmeticContext *ctx)
   std::string         addr2 = codAt2.addr;
   instructionList &   code2 = codAt2.code;
   instructionList &&   code = code1 || code2;
-  // TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
-  // TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
-  // TypesMgr::TypeId  t = getTypeDecor(ctx);
+  
   std::string temp = "%"+codeCounters.newTEMP();
   
   TypesMgr::TypeId t  = getTypeDecor(ctx);
@@ -596,9 +556,7 @@ antlrcpp::Any CodeGenVisitor::visitRelational(AslParser::RelationalContext *ctx)
   std::string         addr2 = codAt2.addr;
   instructionList &   code2 = codAt2.code;
   instructionList &&   code = code1 || code2;
-  // TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
-  // TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
-  // TypesMgr::TypeId  t = getTypeDecor(ctx);
+  
   std::string temp = "%"+codeCounters.newTEMP();
   if (ctx->EQUAL()){
     code = code || instruction::EQ(temp, addr1, addr2);
@@ -821,7 +779,7 @@ antlrcpp::Any CodeGenVisitor::visitFuncValue(AslParser::FuncValueContext *ctx){
       code = code || code1 || instruction::PUSH(addr1);
     }
   }
-  // std::cout<<code.dump()<<std::endl;
+
   code = code || instruction::CALL(funcionLlamada);
 
   for (uint i = 0; i< (ctx->expr()).size(); ++i){
@@ -863,7 +821,7 @@ antlrcpp::Any CodeGenVisitor::visitArrayPos(AslParser::ArrayPosContext *ctx){
 
     code = code || instruction::LOAD(dire, addrI)||instruction::LOADX(temp, dire, addrO);
   }
-  // std::cout<<code.dump()<<std::endl;
+
 
   CodeAttribs codAts(temp,"",code);
   DEBUG_EXIT();
